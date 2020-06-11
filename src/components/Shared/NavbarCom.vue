@@ -1,21 +1,21 @@
 <template>
   <div>
-    <b-navbar toggleable="lg" type="dark" variant="dark">
+    <b-navbar toggleable="lg" type="dark" fixed="top" variant="dark">
       <b-container>
         <b-navbar-brand href="#">{{ title }}</b-navbar-brand>
 
-        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+        <b-navbar-toggle target="nav-collapse" v-if="user_id"></b-navbar-toggle>
 
-        <b-collapse id="nav-collapse" is-nav>
+        <b-collapse id="nav-collapse" is-nav v-if="user_id">
           <b-navbar-nav></b-navbar-nav>
 
           <!-- Right aligned nav items -->
           <b-navbar-nav class="ml-auto">
 
-            <b-nav-item-dropdown right v-if="username">
+            <b-nav-item-dropdown right>
               <!-- Using 'button-content' slot -->
               <template v-slot:button-content>
-                <em>{{ username }}</em>
+                <em>{{ user.name }}</em>
               </template>
               <b-dropdown-item href="#" @click="logout()">Salir</b-dropdown-item>
             </b-nav-item-dropdown>
@@ -28,15 +28,10 @@
 </template>
 
 <script>
-import { EventBus } from '../../event-bus'
+import { mapState, mapActions } from 'vuex'
 
 export default {
-  props: {
-    username: {
-      type: String,
-      required: true
-    }
-  },
+  computed: mapState('firebase', ['user_id', 'user']),
 
   data () {
     return {
@@ -44,10 +39,9 @@ export default {
     }
   },
 
-  methods: {
-    logout () {
-      EventBus.$emit('on-logout')
-    }
-  }
+  methods: mapActions('firebase', {
+    logout: 'LOGOUT'
+  })
+
 }
 </script>

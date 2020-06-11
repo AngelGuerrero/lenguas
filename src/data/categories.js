@@ -1,27 +1,22 @@
 export default [
   {
     name: 'Taíno',
-    words: ['Canoa', 'Maraca', 'Hamaca', 'Cacique', 'Maíz', 'Tiburón'],
-    input: []
+    words: ['Canoa', 'Maraca', 'Hamaca', 'Cacique', 'Maíz', 'Tiburón']
   },
   {
-
     name: 'Caribe',
-    words: ['Caimán', 'Loro', 'Butaca', 'Bahareque', 'Arepa'],
-    input: []
+    words: ['Caimán', 'Loro', 'Butaca', 'Bahareque', 'Arepa']
   },
   {
     name: 'Chibcha',
-    words: ['Chingue', 'Sute', 'Cuncho', 'Guaricha', 'Gueba'],
-    input: []
+    words: ['Chingue', 'Sute', 'Cuncho', 'Guaricha', 'Gueba']
   },
   {
     name: 'Nahualt',
-    words: ['Aguacate', 'Chocolate', 'Tomate', 'Chicle', 'cuate', 'apapacho'],
-    input: []
+    words: ['Aguacate', 'Chocolate', 'Tomate', 'Chicle', 'cuate', 'apapacho']
   },
   {
     name: 'Quechua',
-    words: ['Taita', 'Cura', 'Cancha', 'Guagua', 'Morocho', 'Papa'],
-    input: []
-  }]
+    words: ['Taita', 'Cura', 'Cancha', 'Guagua', 'Morocho', 'Papa']
+  }
+]

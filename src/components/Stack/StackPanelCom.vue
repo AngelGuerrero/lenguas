@@ -1,8 +1,8 @@
 <template>
-  <b-container class="mycontainer">
+  <b-container class="pt-3">
     <b-row>
       <!-- All word list -->
-      <b-col class="mycontainer" sm="12" md="12">
+      <b-col sm="12" md="12">
         <b-card-group>
           <b-card header="Palabras">
             <draggable
@@ -23,12 +23,12 @@
       </b-col>
 
       <!-- Columns list containers -->
-      <b-col class="mycontainer" sm="12" md="12">
-        <b-row class="d-flex">
+      <b-col class="pt-3" sm="12" md="12">
+        <b-row>
           <b-col
             v-for="category in categories"
             :key="category.id"
-            class="mycontainer"
+            class="pb-3"
             sm="12"
             md="3"
           >
@@ -53,7 +53,7 @@
     </b-row>
 
     <b-row>
-      <b-col class="mycontainer" sm="12" md="12">
+      <b-col sm="12" md="12">
         <button
           class="btn btn-success float-right"
           v-if="list.length <= 0"
@@ -66,63 +66,78 @@
 
 <script>
 import draggable from 'vuedraggable'
-import CATEGORIES from '../data/categories'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
+  props: {
+    p_categories: {
+      type: Array,
+      required: true
+    }
+  },
+
   components: {
     draggable
   },
 
   created () {
-    this.init()
+    this.load()
   },
 
   computed: {
-    dragOptions () {
-      return {
-        animation: 200,
-        disabled: false,
-        ghostClass: 'ghost'
-      }
-    }
+    ...mapGetters('firebase', ['USER_HAS_FINISHED']),
+
+    dragOptions: () => ({
+      animation: 200,
+      disabled: false,
+      ghostClass: 'ghost'
+    })
   },
 
-  data () {
-    return {
-      drag: {
-        group: 'shared-group',
-        dragging: false
-      },
+  data: () => ({
+    drag: {
+      group: 'shared-group',
+      dragging: false
+    },
 
-      list: [],
+    list: [],
 
-      categories: []
-    }
-  },
+    categories: []
+  }),
 
   methods: {
-    init () {
-      Object.assign(this.$data, this.$options.data())
-      console.log('iniciando stack...')
+    ...mapActions('firebase', ['SAVE_ANSWERS']),
+
+    load () {
+      if (this.USER_HAS_FINISHED) {
+        this.loadUserAnwers()
+        return
+      }
       //
       // Initialize categories
-      this.categories = [...CATEGORIES]
+      this.categories = this.p_categories.reduce((acc, curr, idx, arr) => {
+        acc.push({ name: curr.name, words: curr.words.map(w => w), input: [] })
+        return acc
+      }, [])
       //
       // All available words
-      const capitalize = ele => ele.charAt(0).toUpperCase() + ele.slice(1)
-      this.list = CATEGORIES.reduce(
-        (acc, val) => acc.concat(val.words.map(capitalize)),
+      this.list = this.p_categories.reduce(
+        (acc, val) => acc.concat(val.words.map(this.capitalize())),
         []
       )
     },
 
-    getListWordsComponentData () {
-      return {
-        attrs: {
-          horizontal: 'md'
-        }
-      }
+    loadUserAnwers () {
+      console.log('loading user anwers')
     },
+
+    getListWordsComponentData: () => ({
+      attrs: {
+        horizontal: 'md'
+      }
+    }),
+
+    capitalize: () => ele => ele.charAt(0).toUpperCase() + ele.slice(1),
 
     getStatistics () {
       const statistics = this.categories.reduce((acc, current, index, arr) => {
@@ -145,17 +160,14 @@ export default {
 
     finish () {
       // Save and send data to firebase
-      this.getStatistics().map(ele => console.log(ele))
+      const statistics = this.getStatistics()
+      this.SAVE_ANSWERS(statistics)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.mycontainer {
-  padding-top: 7px;
-  padding-bottom: 7px;
-}
 .dragMode {
   border: 3px dashed #f363f8;
   background: #faeffd;

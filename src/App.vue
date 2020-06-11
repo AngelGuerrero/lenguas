@@ -1,68 +1,82 @@
 <template>
   <div id="app">
-    <main-navbar :username="user.name"></main-navbar>
-    <user-input class="main" v-if="user.name.length <= 0"></user-input>
-
+    <navbar-com></navbar-com>
     <!-- main view -->
-    <admin-panel class="main" v-if="user.isAdmin"></admin-panel>
-    <div v-else>
-      <stack-list class="main" v-show="user.name.length > 0" ref="stacklistComponent"></stack-list>
+    <div class="main">
+      <login-com v-if="!user_id"></login-com>
+      <div v-else>
+        <div v-if="user_id">
+          <admin-panel-com v-if="user.isAdmin"></admin-panel-com>
+          <div v-else>
+            <stack-panel-com
+              v-if="!USER_HAS_FINISHED"
+              :p_categories="app_categories"
+              ref="stackpanelcom"
+            ></stack-panel-com>
+            <stack-msg v-else></stack-msg>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <main-footer></main-footer>
+    <footer-com></footer-com>
   </div>
 </template>
 
 <script>
-import { EventBus } from './event-bus'
+import CATEGORIES from '@/data/categories'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
-import stackList from './components/StackList'
-import userInput from './components/user/UserInput'
-import mainNavbar from './components/view/Navbar'
-import adminPanel from './components/view/AdminPanel'
-import mainFooter from './components/view/Footer'
+import NavbarCom from './components/Shared/NavbarCom'
+import FooterCom from './components/Shared/FooterCom'
+import AdminPanelCom from './components/Admin/AdminPanelCom'
+import StackPanelCom from './components/Stack/StackPanelCom'
+import StackMsg from './components/Stack/StackMsg'
+import LoginCom from './components/Login/LoginCom'
 
 export default {
   name: 'app',
 
   components: {
-    userInput,
-    stackList,
-    mainNavbar,
-    adminPanel,
-    mainFooter
+    NavbarCom,
+    FooterCom,
+    AdminPanelCom,
+    StackPanelCom,
+    StackMsg,
+    LoginCom
   },
 
   created () {
-    EventBus.$on('on-get-user', response => (this.user = response))
-
-    EventBus.$on('on-logout', () => this.resetData())
-
-    this.resetData()
+    this.loadSessionIfExists()
   },
 
-  data () {
-    return {
-      user: {
-        name: 'test',
-        isAdmin: false
-      }
-    }
+  computed: {
+    ...mapGetters('firebase', ['USER_HAS_SESSION', 'USER_HAS_FINISHED']),
+
+    ...mapState('firebase', ['user_id', 'user'])
   },
+
+  data: () => ({
+    app_categories: [...CATEGORIES]
+  }),
 
   methods: {
-    resetData () {
-      // this.$refs.stacklistComponent.init()
-      // this.$refs.stacklistComponent.$forceUpdate();
-      // console.log(this.$refs.stacklistComponent)
-      this.user.name = ''
-      this.user.isAdmin = false
+    ...mapActions('firebase', ['BIND_USER']),
+
+    loadSessionIfExists () {
+      const retval = this.USER_HAS_SESSION
+      if (retval.ok) {
+        this.BIND_USER(retval.id)
+      }
     }
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+#app {
+  padding-top: 50px;
+}
 .main {
   min-height: calc(100vh - 115px);
 }
