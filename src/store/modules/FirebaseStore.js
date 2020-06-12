@@ -6,26 +6,6 @@ export default {
   namespaced: true,
 
   state: {
-    admin: {
-      name: 'wenargente',
-      password: 'master'
-    },
-
-    input: {
-      name: null,
-      password: null,
-      hasAdminAccess: false,
-
-      isAdmin: false,
-      isOnline: false,
-      hasFinished: false
-    },
-
-    //
-    // User currently loged bind with firebase
-    user_id: null,
-    user: {},
-
     //
     // All users registered
     users: [],
@@ -53,16 +33,6 @@ export default {
 
     USER_HAS_FINISHED: state =>
       state.user.answers && state.user.answers.length > 0
-  },
-
-  mutations: {
-    CLEAR_INPUT: ({ input }) => {
-      input.name = null
-      input.password = null
-      input.hasAdminAccess = false
-      input.isAdmin = false
-      input.isOnline = false
-    }
   },
 
   actions: {

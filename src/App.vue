@@ -1,23 +1,10 @@
 <template>
   <div id="app">
     <navbar-com></navbar-com>
-    <!-- main view -->
-    <div class="main">
-      <login-com v-if="!user_id"></login-com>
-      <div v-else>
-        <div v-if="user_id">
-          <admin-panel-com v-if="user.isAdmin"></admin-panel-com>
-          <div v-else>
-            <stack-panel-com
-              v-if="!USER_HAS_FINISHED"
-              :p_categories="app_categories"
-              ref="stackpanelcom"
-            ></stack-panel-com>
-            <stack-msg v-else></stack-msg>
-          </div>
-        </div>
-      </div>
-    </div>
+
+    <b-container class="main">
+      <router-view></router-view>
+    </b-container>
 
     <footer-com></footer-com>
   </div>
@@ -29,25 +16,15 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 
 import NavbarCom from './components/Shared/NavbarCom'
 import FooterCom from './components/Shared/FooterCom'
-import AdminPanelCom from './components/Admin/AdminPanelCom'
-import StackPanelCom from './components/Stack/StackPanelCom'
-import StackMsg from './components/Stack/StackMsg'
-import LoginCom from './components/Login/LoginCom'
 
 export default {
-  name: 'app',
-
   components: {
     NavbarCom,
-    FooterCom,
-    AdminPanelCom,
-    StackPanelCom,
-    StackMsg,
-    LoginCom
+    FooterCom
   },
 
   created () {
-    this.loadSessionIfExists()
+    // this.loadSessionIfExists()
   },
 
   computed: {
@@ -77,7 +54,10 @@ export default {
 #app {
   padding-top: 50px;
 }
+
 .main {
-  min-height: calc(100vh - 115px);
+  min-height: calc(100vh - 107px);
+  display: flex;
+  align-content: stretch;
 }
 </style>

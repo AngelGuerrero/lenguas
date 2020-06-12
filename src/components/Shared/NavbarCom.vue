@@ -35,7 +35,7 @@ export default {
 
   data () {
     return {
-      title: 'Categorización'
+      title: 'Playground'
     }
   },
 

@@ -4,6 +4,7 @@ import { vuexfireMutations } from 'vuexfire'
 
 import ui from '@/store/modules/UserInterfaceStore'
 import firebase from '@/store/modules/FirebaseStore'
+import access from '@/store/modules/AccessStore'
 
 Vue.use(Vuex)
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
 
   modules: {
     ui,
-    firebase
+    firebase,
+    access
   }
 })
