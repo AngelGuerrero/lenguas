@@ -1,6 +1,8 @@
 <template>
-  <b-container class="pt-3" fluid>
+  <div class="pt-3" fluid>
     <h1>Admin panel</h1>
+
+    <pre>{{ users }}</pre>
 
     <b-card-group class="mt-3 mb-3" v-for="user in users" :key="user.id">
       <b-card :header="user.name">
@@ -73,22 +75,19 @@
         </b-list-group>
       </b-card>
     </b-card-group>
-  </b-container>
+  </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
+
+//
+// CONST
+const usersx = 'users'
+
 export default {
-  created () {
-    this.BIND_USERS()
-  },
-
   computed: {
-    ...mapState('firebase', ['users'])
-  },
-
-  methods: {
-    ...mapActions('firebase', ['BIND_USERS'])
+    ...mapState(usersx, ['users'])
   }
 }
 </script>

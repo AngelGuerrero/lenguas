@@ -1,22 +1,9 @@
 <template>
   <div id="app">
     <navbar-com></navbar-com>
-    <!-- main view -->
-    <div class="main">
-      <login-com v-if="!user_id"></login-com>
-      <div v-else>
-        <div v-if="user_id">
-          <admin-panel-com v-if="user.isAdmin"></admin-panel-com>
-          <div v-else>
-            <stack-panel-com
-              v-if="!USER_HAS_FINISHED"
-              :p_categories="app_categories"
-              ref="stackpanelcom"
-            ></stack-panel-com>
-            <stack-msg v-else></stack-msg>
-          </div>
-        </div>
-      </div>
+
+    <div class="main d-flex justify-content-center">
+      <router-view></router-view>
     </div>
 
     <footer-com></footer-com>
@@ -29,31 +16,23 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 
 import NavbarCom from './components/Shared/NavbarCom'
 import FooterCom from './components/Shared/FooterCom'
-import AdminPanelCom from './components/Admin/AdminPanelCom'
-import StackPanelCom from './components/Stack/StackPanelCom'
-import StackMsg from './components/Stack/StackMsg'
-import LoginCom from './components/Login/LoginCom'
+
+const userx = 'users'
 
 export default {
-  name: 'app',
-
   components: {
     NavbarCom,
-    FooterCom,
-    AdminPanelCom,
-    StackPanelCom,
-    StackMsg,
-    LoginCom
+    FooterCom
   },
 
   created () {
-    this.loadSessionIfExists()
+    // this.loadSessionIfExists()
   },
 
   computed: {
-    ...mapGetters('firebase', ['USER_HAS_SESSION', 'USER_HAS_FINISHED']),
+    ...mapState(userx, ['user_id', 'user']),
 
-    ...mapState('firebase', ['user_id', 'user'])
+    ...mapGetters(userx, ['USER_HAS_SESSION', 'USER_HAS_FINISHED'])
   },
 
   data: () => ({
@@ -61,7 +40,7 @@ export default {
   }),
 
   methods: {
-    ...mapActions('firebase', ['BIND_USER']),
+    ...mapActions(userx, ['BIND_USER']),
 
     loadSessionIfExists () {
       const retval = this.USER_HAS_SESSION
@@ -73,11 +52,14 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-#app {
-  padding-top: 50px;
-}
-.main {
-  min-height: calc(100vh - 115px);
-}
+<style lang="sass" scoped>
+@import "@/assets/sass/_variables.sass"
+
+#app
+  padding-top: 50px
+
+.main
+  min-height: calc(100vh - 107px)
+  display: flex
+  align-content: stretch
 </style>

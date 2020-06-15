@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import { vuexfireMutations } from 'vuexfire'
 
 import ui from '@/store/modules/UserInterfaceStore'
-import firebase from '@/store/modules/FirebaseStore'
+import users from '@/store/modules/UsersStore'
 
 Vue.use(Vuex)
 
@@ -18,6 +18,6 @@ export default new Vuex.Store({
 
   modules: {
     ui,
-    firebase
+    users
   }
 })

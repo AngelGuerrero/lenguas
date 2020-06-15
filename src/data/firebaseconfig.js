@@ -1,28 +1,29 @@
-import firebase from 'firebase/app'
+import * as firebase from 'firebase/app'
+import 'firebase/auth'
 import 'firebase/firestore'
 
 const config = {
-  apiKey: 'AIzaSyCx35HZlAEEpCEDhHCCJToZew-BJb2EBXI',
-  authDomain: 'app-lenguas-indigenas.firebaseapp.com',
-  databaseURL: 'https://app-lenguas-indigenas.firebaseio.com',
-  projectId: 'app-lenguas-indigenas',
-  storageBucket: 'app-lenguas-indigenas.appspot.com',
-  messagingSenderId: '602527794802',
-  appId: '1:602527794802:web:71573d03c44881ae99e4eb'
+  apiKey: process.env.VUE_APP_API_KEY,
+  authDomain: process.env.VUE_APP_AUTH_DOMAIN,
+  databaseURL: process.env.VUE_APP_DATABASE_URL,
+  projectId: process.env.VUE_APP_PROJECT_ID,
+  storageBucket: process.env.VUE_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.VUE_APP_MESSAGING_SENDER_ID,
+  appId: process.env.VUE_APP_APP_ID
 }
 
 // Initialize Firebase
-const db = firebase.initializeApp(config).firestore()
+firebase.initializeApp(config)
+
+//
+// Firebase utils
+const db = firebase.firestore()
 
 //
 // References
-const fbUsers = db.collection('users')
-const fbCategories = db.collection('categories')
-const fbAnswers = db.collection('answers')
+const usersCollection = db.collection('users')
 
 export {
-  db,
-  fbUsers,
-  fbCategories,
-  fbAnswers
+  firebase,
+  usersCollection
 }
