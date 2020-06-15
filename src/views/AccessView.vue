@@ -1,14 +1,14 @@
 <template>
-  <b-container id="access-view-container" class="d-flex justify-content-center align-items-center">
+  <b-container class="d-flex justify-content-center align-items-center m-5">
     <b-card class="access-view__card" no-body bg-variant="light">
       <b-tabs pills card align="center">
-        <b-tab title="Ingresar">
+        <b-tab title="Ingreso">
           <b-container>
             <login-com></login-com>
           </b-container>
         </b-tab>
 
-        <b-tab title="Registrar" active>
+        <b-tab title="Registro">
           <b-container>
             <register-com></register-com>
           </b-container>
@@ -54,11 +54,13 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.access-view__card {
-  min-height: 50%;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 5px 5px 12px 10px #dee3e7;
-}
+<style lang="sass" scoped>
+.access-view__card
+  width: 100%
+  max-width: 450px
+  min-height: 50%
+  // style
+  box-shadow: 0px 0px 30px 10px #dee3e7
+  @media screen and (max-width: 500px)
+    max-width: 1000px
 </style>

@@ -2,7 +2,9 @@
   <div>
     <b-navbar toggleable="lg" type="dark" fixed="top" variant="dark">
       <b-container>
-        <b-navbar-brand href="#">{{ title }}</b-navbar-brand>
+        <b-navbar-brand href="#" class="app__title">
+          <router-link :to="{name: 'home'}">{{ title }}</router-link>
+        </b-navbar-brand>
 
         <b-navbar-toggle target="nav-collapse" v-if="user_id"></b-navbar-toggle>
 
@@ -30,18 +32,27 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 
+const _userx = 'users'
+
 export default {
-  computed: mapState('firebase', ['user_id', 'user']),
+  computed: mapState(_userx, ['user_id', 'user']),
 
   data () {
     return {
-      title: 'Playground'
+      title: process.env.VUE_APP_TITLE
     }
   },
 
-  methods: mapActions('firebase', {
+  methods: mapActions(_userx, {
     logout: 'LOGOUT'
   })
 
 }
 </script>
+
+<style lang="sass">
+@import "@/assets/sass/_variables.sass"
+
+.app__title a
+  color: $enfasis
+</style>

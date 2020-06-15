@@ -37,6 +37,7 @@ export default {
 
   actions: {
     BIND_USERS: firestoreAction(({ bindFirestoreRef }) => {
+      console.log('Loading users...')
       return bindFirestoreRef('users', fbUsers.where('isAdmin', '==', false))
     }),
 

@@ -2,9 +2,9 @@
   <div id="app">
     <navbar-com></navbar-com>
 
-    <b-container class="main">
+    <div class="main d-flex justify-content-center">
       <router-view></router-view>
-    </b-container>
+    </div>
 
     <footer-com></footer-com>
   </div>
@@ -17,6 +17,8 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 import NavbarCom from './components/Shared/NavbarCom'
 import FooterCom from './components/Shared/FooterCom'
 
+const userx = 'users'
+
 export default {
   components: {
     NavbarCom,
@@ -28,9 +30,9 @@ export default {
   },
 
   computed: {
-    ...mapGetters('firebase', ['USER_HAS_SESSION', 'USER_HAS_FINISHED']),
+    ...mapState(userx, ['user_id', 'user']),
 
-    ...mapState('firebase', ['user_id', 'user'])
+    ...mapGetters(userx, ['USER_HAS_SESSION', 'USER_HAS_FINISHED'])
   },
 
   data: () => ({
@@ -38,7 +40,7 @@ export default {
   }),
 
   methods: {
-    ...mapActions('firebase', ['BIND_USER']),
+    ...mapActions(userx, ['BIND_USER']),
 
     loadSessionIfExists () {
       const retval = this.USER_HAS_SESSION
@@ -50,14 +52,14 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-#app {
-  padding-top: 50px;
-}
+<style lang="sass" scoped>
+@import "@/assets/sass/_variables.sass"
 
-.main {
-  min-height: calc(100vh - 107px);
-  display: flex;
-  align-content: stretch;
-}
+#app
+  padding-top: 50px
+
+.main
+  min-height: calc(100vh - 107px)
+  display: flex
+  align-content: stretch
 </style>

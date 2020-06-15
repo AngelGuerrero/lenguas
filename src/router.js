@@ -8,32 +8,23 @@ Vue.use(VueRouter)
 
 const router = new VueRouter({
   routes: [
-    {
-      path: '',
-      component: Home
-    },
+    { path: '', component: Home },
 
-    {
-      path: '/home',
-      name: 'Home',
-      component: Home
-    },
+    { path: '/home', name: 'home', component: Home },
 
-    {
-      path: '/access',
-      name: 'Access',
-      component: Access
-    },
+    { path: '/access', name: 'access', component: Access },
 
     {
       path: '/categorizacion',
-      name: 'Categorizacion',
+      name: 'categorizacion',
       component: () => import('@/components/Stack/StackPanelCom.vue')
+    },
+
+    {
+      path: '/admin/dashboard',
+      name: 'admin',
+      component: () => import('@/components/Admin/AdminPanelCom.vue')
     }
-    // {
-    //   path: '/',
-    //   component: Home
-    // }
   ]
 })
 
