@@ -1,5 +1,5 @@
 <template>
-  <b-container class="d-flex justify-content-center align-items-center m-5">
+  <div class="d-flex justify-content-center align-items-center m-5">
     <b-card class="access-view__card" no-body bg-variant="light">
       <b-tabs pills card align="center">
         <b-tab title="Ingreso">
@@ -15,7 +15,7 @@
         </b-tab>
       </b-tabs>
     </b-card>
-  </b-container>
+  </div>
 </template>
 
 <script>

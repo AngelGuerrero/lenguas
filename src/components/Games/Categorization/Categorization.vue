@@ -1,5 +1,20 @@
 <template>
   <b-container class="pt-3">
+    <b-container>
+      <b-row>
+        <b-col>
+          <h4>Categories</h4>
+          <pre>{{ this.$store.state.games.categories }}</pre>
+        </b-col>
+        <b-col>
+          <h4>Local categories</h4>
+          <pre> {{ this.categories }} </pre>
+          <h4>List</h4>
+          <pre> {{ this.list }} </pre>
+        </b-col>
+      </b-row>
+    </b-container>
+
     <b-row>
       <!-- All word list -->
       <b-col sm="12" md="12">
@@ -69,19 +84,15 @@ import draggable from 'vuedraggable'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  props: {
-    p_categories: {
-      type: Array,
-      required: true
-    }
-  },
-
   components: {
     draggable
   },
 
   created () {
-    this.load()
+    Promise.all(
+      [
+        this.$store.dispatch('games/loadCollectionIfNotExists')
+      ]).then(this.load())
   },
 
   computed: {
@@ -109,26 +120,23 @@ export default {
     ...mapActions('firebase', ['SAVE_ANSWERS']),
 
     load () {
-      if (this.USER_HAS_FINISHED) {
-        this.loadUserAnwers()
-        return
-      }
+      console.log('loading...')
+      this.$forceUpdate()
+      console.log(this.$store.state.games.categories)
+      this.$store.state.games.categories.map(item => this.categories.push(item))
       //
       // Initialize categories
-      this.categories = this.p_categories.reduce((acc, curr, idx, arr) => {
+      this.categories = this.$store.state.games.categories.reduce((acc, curr, idx, arr) => {
+        console.log(curr)
         acc.push({ name: curr.name, words: curr.words.map(w => w), input: [] })
         return acc
       }, [])
-      //
+
       // All available words
-      this.list = this.p_categories.reduce(
+      this.list = this.$store.state.games.categories.reduce(
         (acc, val) => acc.concat(val.words.map(this.capitalize())),
         []
       )
-    },
-
-    loadUserAnwers () {
-      console.log('loading user anwers')
     },
 
     getListWordsComponentData: () => ({

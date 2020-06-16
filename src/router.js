@@ -15,15 +15,15 @@ const router = new VueRouter({
     { path: '/access', name: 'access', component: Access },
 
     {
-      path: '/categorizacion',
+      path: '/games/categorizacion',
       name: 'categorizacion',
-      component: () => import('@/components/Stack/StackPanelCom.vue')
+      component: () => import('@/components/Games/Categorization/Categorization.vue')
     },
 
     {
       path: '/admin/dashboard',
       name: 'admin',
-      component: () => import('@/components/Admin/AdminPanelCom.vue')
+      component: () => import('@/views/Admin/AdminView.vue')
     }
   ]
 })

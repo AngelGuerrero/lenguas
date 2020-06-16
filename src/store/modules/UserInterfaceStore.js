@@ -1,9 +1,20 @@
 export default {
   namespaced: true,
 
-  state: {},
+  state: {
+    asideLeft: {
+      show: true,
+      isMobile: false
+    }
+  },
 
-  mutations: {},
+  mutations: {
+    toggleAside (state) {
+      state.asideLeft.show = !state.asideLeft.show
+    },
 
-  actions: {}
+    setAsideToMobile (state, value) {
+      state.asideLeft.isMobile = value
+    }
+  }
 }

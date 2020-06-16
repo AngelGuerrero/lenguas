@@ -4,6 +4,7 @@ import { vuexfireMutations } from 'vuexfire'
 
 import ui from '@/store/modules/UserInterfaceStore'
 import users from '@/store/modules/UsersStore'
+import games from '@/store/modules/GamesStore'
 
 Vue.use(Vuex)
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
 
   modules: {
     ui,
-    users
+    users,
+    games
   }
 })

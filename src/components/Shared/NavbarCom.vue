@@ -1,58 +1,56 @@
 <template>
-  <div>
-    <b-navbar toggleable="lg" type="dark" fixed="top" variant="dark">
-      <b-container>
-        <b-navbar-brand href="#" class="app__title">
-          <router-link :to="{name: 'home'}">{{ title }}</router-link>
-        </b-navbar-brand>
+  <b-navbar type="dark" fixed="top" variant="dark">
+    <b-container fluid>
+      <button
+        class="navbar-toggler d-block"
+        type="button"
+        data-toggle="collapse"
+        aria-controls="navbarToggleExternalContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+        @click="toggleAsideLeft()"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <b-navbar-toggle target="nav-collapse" v-if="user_id"></b-navbar-toggle>
+      <b-navbar-brand href="#" class="app__title pl-4">
+        <router-link :to="{name: 'home'}">{{ title }}</router-link>
+      </b-navbar-brand>
 
-        <b-collapse id="nav-collapse" is-nav v-if="user_id">
-          <b-navbar-nav></b-navbar-nav>
-
-          <!-- Right aligned nav items -->
-          <b-navbar-nav class="ml-auto">
-
-            <b-nav-item-dropdown right>
-              <!-- Using 'button-content' slot -->
-              <template v-slot:button-content>
-                <em>{{ user.name }}</em>
-              </template>
-              <b-dropdown-item href="#" @click="logout()">Salir</b-dropdown-item>
-            </b-nav-item-dropdown>
-
-          </b-navbar-nav>
-        </b-collapse>
-      </b-container>
-    </b-navbar>
-  </div>
+      <b-navbar-nav class="ml-auto">
+        <b-nav-item-dropdown text="User" right>
+          <b-dropdown-item href="#">Cuenta</b-dropdown-item>
+          <b-dropdown-item href="#">Cerrar sesión</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar-nav>
+    </b-container>
+  </b-navbar>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-
-const _userx = 'users'
-
 export default {
-  computed: mapState(_userx, ['user_id', 'user']),
-
   data () {
     return {
       title: process.env.VUE_APP_TITLE
     }
   },
 
-  methods: mapActions(_userx, {
-    logout: 'LOGOUT'
-  })
-
+  methods: {
+    toggleAsideLeft () {
+      this.$store.commit('ui/toggleAside')
+    }
+  }
 }
 </script>
 
 <style lang="sass">
-@import "@/assets/sass/_variables.sass"
+@import "@/assets/sass/global.sass"
 
 .app__title a
+  font-family: $montserrat
   color: $enfasis
+  text-decoration: none !important
+  &:hover
+    color: lighten($enfasis, 20)
+    color: blue
 </style>

@@ -1,0 +1,52 @@
+<template>
+  <div>
+    <b-container>
+      <h2>Administración de usuarios</h2>
+    </b-container>
+
+    <b-container class="pt-5">
+      <div>
+        <b-table
+          head-variant="light"
+          striped
+          responsive
+          hover
+          bordered
+          :fields="fields"
+          :items="this.$store.state.users.users"
+        ></b-table>
+      </div>
+    </b-container>
+  </div>
+</template>
+
+<script>
+export default {
+  created () {
+    this.$store.dispatch('users/bindUsers')
+  },
+
+  data: () => ({
+    fields: [
+      {
+        key: 'email',
+        label: 'Email',
+        sortable: false
+      },
+      {
+        key: 'nickname',
+        label: 'Nombre de usuario',
+        sortable: true
+      },
+      {
+        key: 'fullname',
+        label: 'Nombre completo',
+        sortable: true
+      }
+    ]
+  })
+}
+</script>
+
+<style lang="sass" scoped>
+</style>
