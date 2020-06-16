@@ -1,20 +1,5 @@
 <template>
   <b-container class="pt-3">
-    <b-container>
-      <b-row>
-        <b-col>
-          <h4>Categories</h4>
-          <pre>{{ this.$store.state.games.categories }}</pre>
-        </b-col>
-        <b-col>
-          <h4>Local categories</h4>
-          <pre> {{ this.categories }} </pre>
-          <h4>List</h4>
-          <pre> {{ this.list }} </pre>
-        </b-col>
-      </b-row>
-    </b-container>
-
     <b-row>
       <!-- All word list -->
       <b-col sm="12" md="12">
@@ -31,7 +16,9 @@
               @start="drag.dragging = true"
               @end="drag.dragging = false"
             >
-              <b-list-group-item v-for="item in list" :key="item">{{ item }}</b-list-group-item>
+              <b-list-group-item v-for="item in list" :key="item">{{
+                item
+              }}</b-list-group-item>
             </draggable>
           </b-card>
         </b-card-group>
@@ -58,7 +45,11 @@
                   @start="drag.dragging = true"
                   @end="drag.dragging = false"
                 >
-                  <b-list-group-item v-for="item in category.input" :key="item">{{ item }}</b-list-group-item>
+                  <b-list-group-item
+                    v-for="item in category.input"
+                    :key="item"
+                    >{{ item }}</b-list-group-item
+                  >
                 </draggable>
               </b-card>
             </b-card-group>
@@ -73,7 +64,9 @@
           class="btn btn-success float-right"
           v-if="list.length <= 0"
           @click="finish()"
-        >Enviar respuestas</button>
+        >
+          Enviar respuestas
+        </button>
       </b-col>
     </b-row>
   </b-container>
@@ -81,23 +74,22 @@
 
 <script>
 import draggable from 'vuedraggable'
-import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  components: {
-    draggable
+  props: {
+    p_categories: {
+      type: Array,
+      required: true
+    }
   },
 
+  components: { draggable },
+
   created () {
-    Promise.all(
-      [
-        this.$store.dispatch('games/loadCollectionIfNotExists')
-      ]).then(this.load())
+    this.load()
   },
 
   computed: {
-    ...mapGetters('firebase', ['USER_HAS_FINISHED']),
-
     dragOptions: () => ({
       animation: 200,
       disabled: false,
@@ -117,24 +109,17 @@ export default {
   }),
 
   methods: {
-    ...mapActions('firebase', ['SAVE_ANSWERS']),
-
     load () {
-      console.log('loading...')
-      this.$forceUpdate()
-      console.log(this.$store.state.games.categories)
-      this.$store.state.games.categories.map(item => this.categories.push(item))
       //
       // Initialize categories
-      this.categories = this.$store.state.games.categories.reduce((acc, curr, idx, arr) => {
-        console.log(curr)
+      this.categories = this.p_categories.reduce((acc, curr, idx, arr) => {
         acc.push({ name: curr.name, words: curr.words.map(w => w), input: [] })
         return acc
       }, [])
 
       // All available words
-      this.list = this.$store.state.games.categories.reduce(
-        (acc, val) => acc.concat(val.words.map(this.capitalize())),
+      this.list = this.p_categories.reduce(
+        (acc, val) => acc.concat(val.words),
         []
       )
     },
@@ -144,8 +129,6 @@ export default {
         horizontal: 'md'
       }
     }),
-
-    capitalize: () => ele => ele.charAt(0).toUpperCase() + ele.slice(1),
 
     getStatistics () {
       const statistics = this.categories.reduce((acc, current, index, arr) => {

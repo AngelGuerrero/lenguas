@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 import store from './store'
-import router from './router'
+import VueRouter from 'vue-router'
+import { routes } from './routes'
 //
 // Firebase
 import '@/data/firebaseconfig'
@@ -15,6 +16,9 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(firestorePlugin)
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
+Vue.use(VueRouter)
+
+const router = new VueRouter({ routes })
 
 Vue.config.productionTip = false
 

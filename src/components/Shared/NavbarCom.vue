@@ -14,7 +14,7 @@
       </button>
 
       <b-navbar-brand href="#" class="app__title pl-4">
-        <router-link :to="{name: 'home'}">{{ title }}</router-link>
+        <!-- <router-link :to="{ name: '/dashboard' }">{{ title }}</router-link> -->
       </b-navbar-brand>
 
       <b-navbar-nav class="ml-auto">

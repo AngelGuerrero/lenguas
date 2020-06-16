@@ -18,6 +18,17 @@ export default {
   components: {
     NavbarCom,
     FooterCom
+  },
+
+  created () {
+    this.checkWindowSize()
+    window.addEventListener('resize', this.checkWindowSize)
+  },
+
+  methods: {
+    checkWindowSize () {
+      this.$store.commit('ui/setAsideToMobile', window.innerWidth < 768)
+    }
   }
 }
 </script>
