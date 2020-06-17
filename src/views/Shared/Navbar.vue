@@ -20,7 +20,9 @@
       <b-navbar-nav class="ml-auto">
         <b-nav-item-dropdown text="User" right>
           <b-dropdown-item href="#">Cuenta</b-dropdown-item>
-          <b-dropdown-item href="#">Cerrar sesión</b-dropdown-item>
+          <b-dropdown-item href="#" @click="logout()"
+            >Cerrar sesión</b-dropdown-item
+          >
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-container>
@@ -28,6 +30,8 @@
 </template>
 
 <script>
+import { firebase } from '@/data/FirebaseConfig'
+
 export default {
   data () {
     return {
@@ -38,6 +42,13 @@ export default {
   methods: {
     toggleAsideLeft () {
       this.$store.commit('ui/toggleAside')
+    },
+
+    logout () {
+      firebase
+        .auth()
+        .signOut()
+        .then(() => this.$router.replace('login'))
     }
   }
 }

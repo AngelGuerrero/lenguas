@@ -31,10 +31,10 @@ export default {
 <style lang="sass">
 @import "@/assets/sass/global.sass"
 
-#main
-  height: calc(100vh - 57px)
+#app
+  height: 100vh
   overflow: hidden
 
-.main__view
-  overflow-y: auto
+#main
+  height: calc(100vh - 57px)
 </style>

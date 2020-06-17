@@ -1,6 +1,8 @@
 <template>
   <b-form @submit.prevent="createAccount">
-    <b-alert v-if="response.error" variant="danger" show>{{ response.message }}</b-alert>
+    <b-alert v-if="response.error" variant="danger" show>{{
+      response.message
+    }}</b-alert>
 
     <!-- fullname -->
     <b-form-group>
@@ -13,9 +15,13 @@
         :state="validations.fullname.value"
       ></b-form-input>
       <!-- Invalid message -->
-      <b-form-invalid-feedback :state="validations.fullname.value" >{{ validations.fullname.message }}</b-form-invalid-feedback>
+      <b-form-invalid-feedback :state="validations.fullname.value">{{
+        validations.fullname.message
+      }}</b-form-invalid-feedback>
       <!-- Valid message -->
-      <b-form-valid-feedback :state="validations.fullname.value">{{ validations.fullname.message }}</b-form-valid-feedback>
+      <b-form-valid-feedback :state="validations.fullname.value">{{
+        validations.fullname.message
+      }}</b-form-valid-feedback>
     </b-form-group>
 
     <!-- nickname -->
@@ -29,9 +35,13 @@
         :state="validations.nickname.value"
       ></b-form-input>
       <!-- Invalid message -->
-      <b-form-invalid-feedback :state="validations.nickname.value" >{{ validations.nickname.message }}</b-form-invalid-feedback>
+      <b-form-invalid-feedback :state="validations.nickname.value">{{
+        validations.nickname.message
+      }}</b-form-invalid-feedback>
       <!-- Valid message -->
-      <b-form-valid-feedback :state="validations.nickname.value">{{ validations.nickname.message }}</b-form-valid-feedback>
+      <b-form-valid-feedback :state="validations.nickname.value">{{
+        validations.nickname.message
+      }}</b-form-valid-feedback>
     </b-form-group>
 
     <!-- email -->
@@ -46,9 +56,13 @@
         :state="validations.email.value"
       ></b-form-input>
       <!-- Invalid message -->
-      <b-form-invalid-feedback :state="validations.email.value">{{ validations.email.message }}</b-form-invalid-feedback>
+      <b-form-invalid-feedback :state="validations.email.value">{{
+        validations.email.message
+      }}</b-form-invalid-feedback>
       <!-- Valid message -->
-      <b-form-valid-feedback :state="validations.email.value">{{ validations.email.message }}</b-form-valid-feedback>
+      <b-form-valid-feedback :state="validations.email.value">{{
+        validations.email.message
+      }}</b-form-valid-feedback>
     </b-form-group>
 
     <!-- password -->
@@ -61,11 +75,13 @@
         placeholder="Contraseña"
       ></b-form-input>
       <!-- Invalid message -->
-      <b-form-invalid-feedback
-        :state="validations.password.value"
-      >{{ validations.password.message }}</b-form-invalid-feedback>
+      <b-form-invalid-feedback :state="validations.password.value">{{
+        validations.password.message
+      }}</b-form-invalid-feedback>
       <!-- Valid message -->
-      <b-form-valid-feedback :state="validations.password.value">{{ validations.password.message }}</b-form-valid-feedback>
+      <b-form-valid-feedback :state="validations.password.value">{{
+        validations.password.message
+      }}</b-form-valid-feedback>
     </b-form-group>
 
     <!-- repeat password -->
@@ -78,9 +94,13 @@
         placeholder="Repite contraseña"
       ></b-form-input>
       <!-- Invalid message -->
-      <b-form-invalid-feedback :state="validations.passwordRepeat.value" >{{ validations.passwordRepeat.message }}</b-form-invalid-feedback>
+      <b-form-invalid-feedback :state="validations.passwordRepeat.value">{{
+        validations.passwordRepeat.message
+      }}</b-form-invalid-feedback>
       <!--  Valid message -->
-      <b-form-valid-feedback :state="validations.passwordRepeat.value" >{{ validations.passwordRepeat.message }}</b-form-valid-feedback>
+      <b-form-valid-feedback :state="validations.passwordRepeat.value">{{
+        validations.passwordRepeat.message
+      }}</b-form-valid-feedback>
     </b-form-group>
 
     <b-button
@@ -88,29 +108,15 @@
       variant="primary"
       :disabled="!hasPassedValidations"
       block
-    >Crear cuenta</b-button>
+      >Crear cuenta</b-button
+    >
   </b-form>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import { firebase } from '@/data/FirebaseConfig'
-
-const _moduleUsers = 'users'
+import { mapActions } from 'vuex'
 
 export default {
-  created () {
-    if (firebase.auth().currentUser) {
-      const currentUser = firebase.auth().currentUser
-      const { email, uid, emailVerified } = currentUser
-      console.log(`Sesión iniciada del usuario: ${uid} con email: ${email}, ¿cuenta verificada? ${emailVerified}`)
-      console.log('Cerrando sesión')
-      firebase.auth().signOut()
-    } else {
-      console.log('Sesión no iniciada')
-    }
-  },
-
   data: () => ({
     response: {
       error: false,
@@ -150,8 +156,6 @@ export default {
   }),
 
   computed: {
-    ...mapState(_moduleUsers, ['users']),
-
     hasPassedValidations: function () {
       //
       // Register validations
@@ -168,7 +172,11 @@ export default {
   },
 
   methods: {
-    ...mapActions(_moduleUsers, ['createUserAccount', 'getUserByNickName', 'getUserByEmail']),
+    ...mapActions('users', [
+      'createUserAccount',
+      'getUserByNickName',
+      'getUserByEmail'
+    ]),
 
     // #region [ Green ] Validations
 
@@ -191,8 +199,7 @@ export default {
         this.form.fullname.length < minLength ||
         this.form.fullname.length > maxLength
       ) {
-        this.validations.fullname.message =
-          `El nombre debe ser una longitud entre: ${minLength} y ${maxLength} caractéres.`
+        this.validations.fullname.message = `El nombre debe ser una longitud entre: ${minLength} y ${maxLength} caractéres.`
         return
       }
 
@@ -328,6 +335,7 @@ export default {
       // Fix: Push to the user dashboard
       console.log('Cuenta creada correctamente')
       this.reset(event)
+      this.$router.replace('dashboard')
     },
 
     reset (event) {

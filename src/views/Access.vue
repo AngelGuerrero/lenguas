@@ -1,19 +1,19 @@
 <template>
   <div id="access__wrapper">
     <b-container id="img__container">
-      <img src="@/assets/logo.png" class="responsive" width="100" alt="Logo" />
+      <img src="@/assets/logo.png" class="responsive" width="60" alt="Logo" />
     </b-container>
 
     <b-container id="form__container">
       <b-card class="access-view__card" no-body bg-variant="light">
         <b-tabs pills card align="center">
-          <b-tab title="Ingreso">
+          <b-tab title="Ingreso" :active="selected_view === 'signin'">
             <b-container>
               <login />
             </b-container>
           </b-tab>
 
-          <b-tab title="Registro">
+          <b-tab title="Registro" :active="selected_view === 'signup'">
             <b-container>
               <register />
             </b-container>
@@ -32,6 +32,14 @@ export default {
   components: {
     Register,
     Login
+  },
+
+  props: {
+    selected_view: {
+      type: String,
+      required: false,
+      default: 'signin'
+    }
   },
 
   data: () => ({
@@ -66,6 +74,7 @@ export default {
   display: flex
   flex-direction: column
   justify-content: center
+  overflow-y: auto
 
 #img__container
   padding: 30px 0px
@@ -79,6 +88,7 @@ export default {
   display: flex
   justify-content: center
   align-items: flex-start
+  margin-bottom: 15px
 
 .access-view__card
   width: 100%

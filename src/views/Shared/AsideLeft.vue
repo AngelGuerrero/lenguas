@@ -11,7 +11,11 @@
 
     <!-- Main content slot -->
     <b-list-group>
-      <b-list-group-item href="#" v-for="route in getDashboardRoutes" :key="route.id">
+      <b-list-group-item
+        href="#"
+        v-for="route in getDashboardRoutes"
+        :key="route.id"
+      >
         <router-link :to="route.path">{{ route.title }}</router-link>
       </b-list-group-item>
     </b-list-group>
@@ -24,7 +28,7 @@ import { routes } from '@/routes'
 export default {
   computed: {
     getDashboardRoutes () {
-      return routes.find(route => route.name === 'dashboard').children
+      return routes.find(route => route.name === 'Dashboard').children
     }
   }
 }
