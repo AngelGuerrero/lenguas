@@ -13,7 +13,7 @@ export default [
   },
   {
     name: 'Nahualt',
-    words: ['Aguacate', 'Chocolate', 'Tomate', 'Chicle', 'cuate', 'apapacho']
+    words: ['Aguacate', 'Chocolate', 'Tomate', 'Chicle', 'Cuate', 'Apapacho']
   },
   {
     name: 'Quechua',

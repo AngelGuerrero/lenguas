@@ -1,8 +1,13 @@
 <template>
   <b-form @submit.prevent="login">
-    <b-alert variant="danger" v-model="response.error" dismissible>{{ response.message }}</b-alert>
+    <b-alert variant="danger" v-model="response.error" dismissible>{{
+      response.message
+    }}</b-alert>
     <!-- email -->
-    <b-form-group label="Email o nombre de usuario" label-for="input_emailOrNickName">
+    <b-form-group
+      label="Email o nombre de usuario"
+      label-for="input_emailOrNickName"
+    >
       <b-form-input
         id="input_emailOrNickName"
         v-model.trim="form.emailOrNickName"
@@ -24,15 +29,13 @@
     </b-form-group>
 
     <!-- Submit button -->
-    <b-button type="submit" variant="primary" block :disabled="disabledByForm">Ingresar</b-button>
+    <b-button type="submit" variant="primary" block :disabled="disabledByForm"
+      >Ingresar</b-button
+    >
   </b-form>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-
-const _moduleUsers = 'users'
-
 export default {
   data: () => ({
     form: {
@@ -48,13 +51,11 @@ export default {
 
   computed: {
     disabledByForm () {
-      return (this.form.emailOrNickName === '' || this.form.password === '')
+      return this.form.emailOrNickName === '' || this.form.password === ''
     }
   },
 
   methods: {
-    ...mapActions(_moduleUsers, ['getUserByNickName', 'signInWithEmailAndPassword']),
-
     async login (e) {
       const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       //
@@ -68,11 +69,17 @@ export default {
 
       //
       // Is email, log in with it
-      this.loginWithEmailAndPassword(this.form.emailOrNickName, this.form.password)
+      this.loginWithEmailAndPassword(
+        this.form.emailOrNickName,
+        this.form.password
+      )
     },
 
     async loginWithNickName () {
-      const getval = await this.getUserByNickName(this.form.emailOrNickName)
+      const getval = await this.$store.dispatch(
+        'users/getUserByNickName',
+        this.form.emailOrNickName
+      )
 
       //
       // The user with nickname doesn't exist ?
@@ -86,12 +93,18 @@ export default {
     },
 
     async loginWithEmailAndPassword (email, password) {
-      const getval = await this.signInWithEmailAndPassword({ email, password })
+      const getval = await this.$store.dispatch(
+        'users/signInWithEmailAndPassword',
+        { email, password }
+      )
 
       if (getval.error) {
         this.response.error = true
         this.response.message = getval.message
+        return
       }
+
+      this.$router.replace('dashboard')
     }
   }
 }
