@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { firebase } from '@/data/FirebaseConfig'
 import { vuexfireMutations } from 'vuexfire'
 
 import ui from '@/store/modules/UI'
@@ -8,12 +9,33 @@ import games from '@/store/modules/Games'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
-  state: {},
+//
+// Handle reload window
+firebase.auth().onAuthStateChanged((user) => {
+  if (!user) return
 
-  getters: {},
+  //
+  // Set the user from firebase authentication
+  store.commit('setCurrentUser', user)
+  //
+  // Fetch user from the database
+  store.dispatch('users/bindUser', user.uid)
+})
 
-  mutations: { ...vuexfireMutations },
+export const store = new Vuex.Store({
+  state: {
+    currentUser: {}
+  },
+
+  getters: { },
+
+  mutations: {
+    ...vuexfireMutations,
+
+    setCurrentUser (state, payload) {
+      state.currentUser = payload
+    }
+  },
 
   actions: {},
 

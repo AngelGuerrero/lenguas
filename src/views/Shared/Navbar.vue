@@ -18,20 +18,27 @@
       </b-navbar-brand>
 
       <b-navbar-nav class="ml-auto">
-        <b-nav-item-dropdown text="User" right>
+        <b-nav-item-dropdown
+          v-if="databaseUser"
+          :text="this.$store.state.users.databaseUser.nickname"
+          right
+        >
           <b-dropdown-item href="#">Cuenta</b-dropdown-item>
-          <b-dropdown-item href="#" @click="logout()"
+          <b-dropdown-item href="#" @click="signOut"
             >Cerrar sesión</b-dropdown-item
           >
         </b-nav-item-dropdown>
+        <b-nav-item-dropdown
+          v-else
+          text="Loading username..."
+        ></b-nav-item-dropdown>
       </b-navbar-nav>
     </b-container>
   </b-navbar>
 </template>
 
 <script>
-import { firebase } from '@/data/FirebaseConfig'
-
+import { mapState } from 'vuex'
 export default {
   data () {
     return {
@@ -39,16 +46,24 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState('users', ['databaseUser'])
+  },
+
   methods: {
     toggleAsideLeft () {
       this.$store.commit('ui/toggleAside')
     },
 
-    logout () {
-      firebase
-        .auth()
-        .signOut()
-        .then(() => this.$router.replace('login'))
+    async signOut () {
+      const getval = await this.$store.dispatch('users/signOut')
+
+      if (getval.error) {
+        console.log(`Something went wront: ${getval.message}`)
+        return
+      }
+
+      this.$router.replace('login')
     }
   }
 }

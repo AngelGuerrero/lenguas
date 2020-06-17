@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
-import store from './store'
+import { store } from './store'
 import VueRouter from 'vue-router'
 import { routes } from './routes'
 //
@@ -34,7 +34,7 @@ Vue.config.productionTip = false
 
 let app
 
-firebase.auth().onAuthStateChanged(() => {
+firebase.auth().onAuthStateChanged((user) => {
   if (!app) {
     app = new Vue({
       devtool: 'source-map',

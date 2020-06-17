@@ -110,7 +110,7 @@ export default {
       commit('CLEAR_INPUT')
     },
 
-    BIND_USER: firestoreAction(({ state, dispatch, bindFirestoreRef }, id) => {
+    _BIND_USER: firestoreAction(({ state, dispatch, bindFirestoreRef }, id) => {
       //
       // If user exists bind to user
       // else remote local storage

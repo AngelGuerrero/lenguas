@@ -5,12 +5,20 @@ export default {
   namespaced: true,
 
   state: {
-    currentUser: null,
+    databaseUser: {},
 
     users: []
   },
 
   actions: {
+    bindUser: firestoreAction(({ bindFirestoreRef }, uid) => {
+      return bindFirestoreRef('databaseUser', usersCollection.doc(uid))
+    }),
+
+    unbindUser: firestoreAction(({ unbindFirestoreRef }) => {
+      unbindFirestoreRef('databaseUser', {})
+    }),
+
     bindUsers: firestoreAction(({ bindFirestoreRef }) => {
       return bindFirestoreRef('users', usersCollection)
     }),
@@ -85,15 +93,22 @@ export default {
       return retval
     },
 
-    signInWithEmailAndPassword: async ({ context }, { email, password }) => {
+    signInWithEmailAndPassword: async ({ dispatch }, { email, password }) => {
       const retval = { error: false, message: 'ok', data: null }
 
       await firebase.auth().signInWithEmailAndPassword(email, password)
         .catch(error => {
-          console.log('error :>> ', error)
           retval.error = true
           retval.message = error.message
         })
+
+      return retval
+    },
+
+    signOut: async ({ context }) => {
+      const retval = { error: false, message: '' }
+
+      await firebase.auth().signOut().catch(error => { retval.error = true; retval.message = error })
 
       return retval
     },

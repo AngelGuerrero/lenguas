@@ -32,7 +32,7 @@ export const routes = [
     },
     children: [
       {
-        path: '/',
+        path: '/dashboard/categorization',
         title: 'Juego de Categorización',
         name: 'Categorization',
         component: () => import('@/components/Games/Categorization/Categorization.vue'),

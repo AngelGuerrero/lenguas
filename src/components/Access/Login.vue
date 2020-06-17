@@ -104,6 +104,8 @@ export default {
         return
       }
 
+      //
+      // Successfully logged
       this.$router.replace('dashboard')
     }
   }
