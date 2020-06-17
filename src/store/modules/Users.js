@@ -115,32 +115,12 @@ export default {
 
     // #region [ Blue ] Queries
 
-    getUserByQuery: async ({ context }, query) => {
-      const retval = { error: false, message: 'ok', data: null }
-
-      try {
-        const list = []
-        const dataRef = await query.get()
-        const snapshot = await dataRef
-        const documents = await snapshot
-
-        documents.forEach(snapshot => list.push(snapshot.data()))
-
-        retval.data = list
-      } catch (error) {
-        retval.error = true
-        retval.message = 'Error getting users'
-      }
-
-      return retval
-    },
-
     getUserByNickName: async ({ dispatch }, nickname) => {
       const retval = { error: false, message: '', data: null }
 
       const query = await usersCollection.where('nickname', '==', nickname)
 
-      const getval = await dispatch('getUserByQuery', query)
+      const getval = await dispatch('getDataByQuery', query, { root: true })
 
       //
       // Error fetching data ?
@@ -169,7 +149,7 @@ export default {
 
       const query = await usersCollection.where('email', '==', email)
 
-      const getval = await dispatch('getUserByQuery', query)
+      const getval = await dispatch('getDataByQuery', query, { root: true })
 
       //
       // Error fetching data ?

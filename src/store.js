@@ -27,8 +27,6 @@ export const store = new Vuex.Store({
     currentUser: {}
   },
 
-  getters: { },
-
   mutations: {
     ...vuexfireMutations,
 
@@ -37,7 +35,27 @@ export const store = new Vuex.Store({
     }
   },
 
-  actions: {},
+  actions: {
+    getDataByQuery: async ({ context }, query) => {
+      const retval = { error: false, message: 'ok', data: null }
+
+      try {
+        const list = []
+        const dataRef = await query.get()
+        const snapshot = await dataRef
+        const documents = await snapshot
+
+        documents.forEach(snapshot => list.push(snapshot.data()))
+
+        retval.data = list
+      } catch (error) {
+        retval.error = true
+        retval.message = 'Error getting data'
+      }
+
+      return retval
+    }
+  },
 
   modules: {
     ui,

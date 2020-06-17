@@ -21,6 +21,8 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+@import '@/assets/sass/_variables'
+
 // Nabvar height, fixed
 #wrapper
   padding-top: 50px
@@ -39,4 +41,5 @@ export default {
   flex-grow: 1
   overflow-y: auto
   background-color: white
+  background: $access-bg !important
 </style>

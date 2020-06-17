@@ -78,7 +78,7 @@ export default {
   justify-content: center
   overflow-y: auto
   background: #3494E6
-  background: $access-background
+  background: $access-bg
 
 #img__container
   padding: 30px 0px 0px 0px
