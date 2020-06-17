@@ -5,7 +5,7 @@ import VueRouter from 'vue-router'
 import { routes } from './routes'
 //
 // Firebase
-import '@/data/firebaseconfig'
+import '@/data/FirebaseConfig'
 import { firestorePlugin } from 'vuefire'
 //
 // Bootstrap

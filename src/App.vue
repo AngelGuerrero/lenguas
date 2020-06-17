@@ -1,23 +1,18 @@
 <template>
   <div id="app">
-    <navbar-com></navbar-com>
-
     <div id="main">
       <router-view class="main__view"></router-view>
-      <footer-com></footer-com>
     </div>
-
+    <footer-component></footer-component>
   </div>
 </template>
 
 <script>
-import NavbarCom from './components/Shared/NavbarCom'
-import FooterCom from './components/Shared/FooterCom'
+import FooterComponent from './views/Shared/Footer'
 
 export default {
   components: {
-    NavbarCom,
-    FooterCom
+    FooterComponent
   },
 
   created () {
@@ -37,12 +32,9 @@ export default {
 @import "@/assets/sass/global.sass"
 
 #main
-  margin-top: 50px
-  height: calc(100vh - 50px)
-  display: flex
-  flex-direction: column
-  align-items: stretch
+  height: calc(100vh - 57px)
+  overflow: hidden
 
 .main__view
-  flex-grow: 1
+  overflow-y: auto
 </style>

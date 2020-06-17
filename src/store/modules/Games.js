@@ -1,4 +1,4 @@
-import { categoriesCollection } from '@/data/firebaseconfig'
+import { categoriesCollection } from '@/data/FirebaseConfig'
 import { firestoreAction } from 'vuexfire'
 
 export default {
@@ -36,7 +36,7 @@ export default {
 
       if (!collectionExists.empty) return dispatch('getCategories')
 
-      const categories = require('@/data/categories').default
+      const categories = require('@/data/Categories').default
 
       const getval = await dispatch('loadCategories', categories)
 

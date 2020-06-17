@@ -1,10 +1,10 @@
 <template>
   <div>
-    <b-container>
+    <b-container class="pt-4">
       <h2>Administración de usuarios</h2>
     </b-container>
 
-    <b-container class="pt-5">
+    <b-container class="pt-3">
       <div>
         <b-table
           head-variant="light"

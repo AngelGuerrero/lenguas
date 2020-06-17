@@ -14,7 +14,7 @@
       </button>
 
       <b-navbar-brand href="#" class="app__title pl-4">
-        <!-- <router-link :to="{ name: '/dashboard' }">{{ title }}</router-link> -->
+        <router-link to="/dashboard">{{ title }}</router-link>
       </b-navbar-brand>
 
       <b-navbar-nav class="ml-auto">
@@ -51,6 +51,5 @@ export default {
   color: $enfasis
   text-decoration: none !important
   &:hover
-    color: lighten($enfasis, 20)
-    color: blue
+    color: lighten($enfasis, 30)
 </style>

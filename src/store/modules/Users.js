@@ -1,4 +1,4 @@
-import { usersCollection, firebase } from '@/data/firebaseconfig'
+import { usersCollection, firebase } from '@/data/FirebaseConfig'
 import { firestoreAction } from 'vuexfire'
 
 export default {

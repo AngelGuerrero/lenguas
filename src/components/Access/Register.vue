@@ -94,7 +94,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import { firebase } from '@/data/firebaseconfig'
+import { firebase } from '@/data/FirebaseConfig'
 
 const _moduleUsers = 'users'
 
