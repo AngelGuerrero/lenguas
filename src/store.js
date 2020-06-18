@@ -16,44 +16,54 @@ firebase.auth().onAuthStateChanged(user => {
 
   //
   // Set the user from firebase authentication
-  store.commit('users/setCurrentUser', user)
+  store.commit('addTaskToQueue', {
+    action: 'users/setCurrentUser',
+    data: user,
+    label: 'Validando sesión de usuario.'
+  })
   //
   // Fetch user from the database
-  store.dispatch('users/fetchUserProfile', user.uid)
+  store.commit('addTaskToQueue', {
+    action: 'users/fetchUserProfile',
+    data: user.uid,
+    label: 'Obteniendo perfil.'
+  })
+  //
+  // Execute the required initial functions
+  store.dispatch('executeAsyncActions')
 })
 
 export const store = new Vuex.Store({
   state: {
-    performingInitialState: true,
+    currentTask: '',
 
-    actions: [],
+    queueTasks: []
+  },
 
-    queueActions: []
+  getters: {
+    performingInitialTasks: function (state) {
+      return state.queueTasks.length > 0
+    }
   },
 
   mutations: {
     ...vuexfireMutations,
 
-    pushActionResolve (state, value) {
-      state.actions.push(value)
-    },
-
-    setInitialState (state, value) {
-      state.performingInitialState = value
-    }
+    addTaskToQueue: (state, payload) => state.queueTasks.push(payload)
   },
 
   actions: {
-    executeAsyncActions: ({ state: { actions }, dispatch }) => {
-      actions.map((action) => {
-        dispatch(action)
-      })
-    },
+    executeAsyncActions: ({ state, dispatch }) => {
+      const showMessage = message => { state.currentTask = message }
 
-    asyncFunction: ({ context }) => {
-      setTimeout(() => {
-        console.log('Acción resuelta')
-      }, 5000)
+      const fn = task => new Promise(resolve => {
+        showMessage(`${task.label}, espere, por favor...`)
+        dispatch(task.action, task.data).then(_ => state.queueTasks.shift())
+        // External main thread ??
+        setTimeout(() => resolve())
+      })
+
+      state.queueTasks.reduce((p, c) => fn(p).then(_ => fn(c)))
     },
 
     pushAsyncLog: ({ state }, payload) => {

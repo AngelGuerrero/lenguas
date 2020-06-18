@@ -17,28 +17,31 @@ export default {
   },
 
   mutations: {
-    setCurrentUser (state, payload) {
-      state.currentUser = payload
-    },
+    setCurrentUser (state, payload) { state.currentUser = payload },
 
-    setCurrentProfile (state, payload) {
-      state.currentProfile = payload
-    }
+    setCurrentProfile (state, payload) { state.currentProfile = payload }
   },
 
   actions: {
+    setCurrentUser: ({ commit }, user) => { commit('setCurrentUser', user) },
+
     fetchUserProfile: async ({ commit, dispatch }, uid) => {
-      usersCollection
-        .doc(uid)
-        .get()
-        .then(result => commit('setCurrentProfile', result.data()))
-        .catch(error =>
-          dispatch(
-            'pushAsyncLog',
-            { error: true, message: error, event: 'fetching user profile' },
-            { root: true }
+      return new Promise((resolve) => {
+        usersCollection
+          .doc(uid)
+          .get()
+          .then(result => {
+            commit('setCurrentProfile', result.data())
+            resolve()
+          })
+          .catch(error =>
+            dispatch(
+              'pushAsyncLog',
+              { error: true, message: error, event: 'fetching user profile' },
+              { root: true }
+            )
           )
-        )
+      })
     },
 
     bindUsers: firestoreAction(({ bindFirestoreRef }) => {

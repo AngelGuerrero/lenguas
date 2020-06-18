@@ -18,14 +18,8 @@
           <router-link to="/dashboard">{{ title }}</router-link>
         </b-navbar-brand>
 
-        <b-navbar-nav v-if="currentProfile" class="ml-auto">
+        <b-navbar-nav class="ml-auto">
           <b-avatar button variant="dark" v-b-toggle.sidebar-right></b-avatar>
-        </b-navbar-nav>
-        <b-navbar-nav v-else>
-          <div class="text-light d-flex align-items-center">
-            <strong class="pr-3">Loading...</strong>
-            <b-spinner small class="ml-auto"></b-spinner>
-          </div>
         </b-navbar-nav>
       </b-container>
     </b-navbar>
@@ -38,7 +32,6 @@
       no-header-close
       header-class="d-block p-0"
       v-model="showSidebar"
-      v-if="currentProfile"
     >
       <!-- Title -->
       <template v-slot:title="{ hide }">
