@@ -5,19 +5,41 @@ export default {
   namespaced: true,
 
   state: {
-    databaseUser: {},
-
+    //
+    // Current user profile
+    currentProfile: null,
+    //
+    //
+    currentUser: null,
+    //
+    // All database users
     users: []
   },
 
-  actions: {
-    bindUser: firestoreAction(({ bindFirestoreRef }, uid) => {
-      return bindFirestoreRef('databaseUser', usersCollection.doc(uid))
-    }),
+  mutations: {
+    setCurrentUser (state, payload) {
+      state.currentUser = payload
+    },
 
-    unbindUser: firestoreAction(({ unbindFirestoreRef }) => {
-      unbindFirestoreRef('databaseUser', {})
-    }),
+    setCurrentProfile (state, payload) {
+      state.currentProfile = payload
+    }
+  },
+
+  actions: {
+    fetchUserProfile: async ({ commit, dispatch }, uid) => {
+      usersCollection
+        .doc(uid)
+        .get()
+        .then(result => commit('setCurrentProfile', result.data()))
+        .catch(error =>
+          dispatch(
+            'pushAsyncLog',
+            { error: true, message: error, event: 'fetching user profile' },
+            { root: true }
+          )
+        )
+    },
 
     bindUsers: firestoreAction(({ bindFirestoreRef }) => {
       return bindFirestoreRef('users', usersCollection)
@@ -26,11 +48,16 @@ export default {
     createUserAccount: async ({ dispatch }, user) => {
       const retval = { error: false, message: '', data: null }
 
-      const getvalUserWithEmailAndPassword = await dispatch('createUserWithEmailAndPassword', user)
+      const getvalUserWithEmailAndPassword = await dispatch(
+        'createUserWithEmailAndPassword',
+        user
+      )
 
       //
       // Error creating user with email and password ?
-      if (getvalUserWithEmailAndPassword.error) return getvalUserWithEmailAndPassword
+      if (getvalUserWithEmailAndPassword.error) {
+        return getvalUserWithEmailAndPassword
+      }
 
       //
       // Save just created user to collection
@@ -38,10 +65,13 @@ export default {
       // Do not save password in database
       delete user.password
 
-      const getvalUserSavedToCollection = await dispatch('saveUserToUsersCollections', {
-        uid: getvalUserWithEmailAndPassword.data.user.uid,
-        user
-      })
+      const getvalUserSavedToCollection = await dispatch(
+        'saveUserToUsersCollections',
+        {
+          uid: getvalUserWithEmailAndPassword.data.user.uid,
+          user
+        }
+      )
 
       //
       // Error saving user to collection ?
@@ -56,7 +86,9 @@ export default {
     createUserWithEmailAndPassword: async ({ dispatch }, user) => {
       const retval = { error: false, message: '', data: null }
 
-      const createdUser = await firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
+      const createdUser = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(user.email, user.password)
         .catch(error => {
           retval.error = true
           retval.message = error.message
@@ -78,7 +110,7 @@ export default {
       await usersCollection
         .doc(uid)
         .set(user)
-        .catch((err) => {
+        .catch(err => {
           retval.error = true
           retval.message = err.message
         })
@@ -96,7 +128,9 @@ export default {
     signInWithEmailAndPassword: async ({ dispatch }, { email, password }) => {
       const retval = { error: false, message: 'ok', data: null }
 
-      await firebase.auth().signInWithEmailAndPassword(email, password)
+      await firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
         .catch(error => {
           retval.error = true
           retval.message = error.message
@@ -108,7 +142,13 @@ export default {
     signOut: async ({ context }) => {
       const retval = { error: false, message: '' }
 
-      await firebase.auth().signOut().catch(error => { retval.error = true; retval.message = error })
+      await firebase
+        .auth()
+        .signOut()
+        .catch(error => {
+          retval.error = true
+          retval.message = error
+        })
 
       return retval
     },

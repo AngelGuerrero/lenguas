@@ -25,10 +25,12 @@ const usersCollection = db.collection('users')
 const categoriesCollection = db.collection('categories')
 const gamesCollection = db.collection('games')
 const answersCollection = db.collection('answers')
+const logsCollection = db.collection('logs')
 
 export {
   db,
   firebase,
+  logsCollection,
   usersCollection,
   gamesCollection,
   answersCollection,
