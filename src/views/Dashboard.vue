@@ -2,7 +2,7 @@
   <div id="wrapper">
     <navbar></navbar>
     <!-- Aside left -->
-    <aside-left class="dashboard__aside-left" />
+    <aside-left />
 
     <!-- Main content -->
     <div id="dashboard__content" class="p-3">
@@ -16,7 +16,11 @@ import Navbar from '@/views/Shared/Navbar'
 import AsideLeft from '@/views/Shared/AsideLeft'
 
 export default {
-  components: { Navbar, AsideLeft }
+  components: { Navbar, AsideLeft },
+
+  data: () => ({
+    showComponent: false
+  })
 }
 </script>
 
@@ -29,17 +33,11 @@ export default {
   height: 100%
   display: flex
   justify-content: stretch
-  position: relative
-  background-color: white
-
-.dashboard__aside-left
-  width: 250px
-  min-width: 250px
-  max-width: 250px
+  background-color: $access-bg
+  background: rgba(255, 255, 255, 0.40)
+  transition: all 1s
 
 #dashboard__content
   flex-grow: 1
   overflow-y: auto
-  background-color: white
-  background: $access-bg !important
 </style>

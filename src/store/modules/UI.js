@@ -3,7 +3,7 @@ export default {
 
   state: {
     asideLeft: {
-      show: true,
+      show: false,
       isMobile: false
     }
   },

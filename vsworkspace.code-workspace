@@ -8,6 +8,8 @@
     "coloredRegions.namedColors": {
       "Purple": "rgba(79, 44, 115, 0.5)",
       "Blue": "rgba(52,152,219, 0.15)"
-    }
+    },
+    "editor.smoothScrolling": true,
+    "editor.cursorSmoothCaretAnimation": true
   }
 }

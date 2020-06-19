@@ -49,5 +49,6 @@ export default {
 
 #main
   height: calc(100vh - 57px)
-  background-color: white
+  background: $access-bg
+  background-color: white !important
 </style>
