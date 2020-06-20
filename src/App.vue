@@ -46,6 +46,11 @@ export default {
 #app
   height: 100vh
   overflow: hidden
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
 
 #main
   height: calc(100vh - 57px)

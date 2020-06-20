@@ -1,11 +1,7 @@
 <template>
-  <div>
+  <div id="categorization__wrapper">
     <b-container class="pt-4" fluid>
       <h2>Juego de palabras</h2>
-    </b-container>
-
-    <b-container>
-      <!-- <pre>{{ $data.list }}</pre> -->
     </b-container>
 
     <b-container class="pt-3" fluid>
@@ -20,10 +16,12 @@
               header-text-variant="white"
               header-class="text-center text-uppercase font-weight-bold"
               body-bg-variant="light"
+              body-class="p-1"
               footer-bg-variant="white"
               footer-text-variant="dark"
             >
               <draggable
+                id="draggable-container"
                 tag="b-list-group"
                 class="d-flex flex-wrap justify-content-center"
                 :class="drag.dragging ? 'dragMode' : ''"
@@ -43,9 +41,10 @@
                   class="d-flex flex-wrap justify-content-between list-wrapper-transition"
                 >
                   <b-list-group-item
-                    v-for="item in list"
+                    v-for="(item, index) in list"
                     :key="item"
-                    :class="{ 'border-danger': drag.disabled }"
+                    :id="'from-'+[index]"
+                    :class="{ 'list-item-shuffling': drag.disabled }"
                     class="list-transition-item m-1 border border-success"
                   >{{ item }}</b-list-group-item>
                 </transition-group>
@@ -68,21 +67,24 @@
         <!-- To -->
         <b-col class="pt-3" sm="12" md="12">
           <b-row>
-            <b-col v-for="category in categories" :key="category.id" class="pb-3" sm="12" md="2">
+            <b-col v-for="(category, index) in categories" :key="category.id" class="p-1" sm="12" md="3">
               <b-card-group deck>
                 <b-card
                   :header="category.name"
                   header-bg-variant="primary"
                   header-text-variant="light"
                   header-class="text-center text-uppercase font-weight-bold"
+                  body-class="p-1"
                 >
                   <draggable
-                    tag
+                    :id="'to-'+[index]"
+                    tag="b-list-group"
                     v-bind="dragOptions"
                     v-model="category.input"
+                    class="b-list-group-to"
                     :class="drag.dragging ? 'dragMode' : ''"
                     :group="drag.group"
-                    :disabled="isGameOver"
+                    :disabled="isGameOver || drag.disabled"
                     :sort="false"
                     @start="drag.dragging = true"
                     @end="drag.dragging = false"
@@ -123,8 +125,9 @@ export default {
   components: { draggable },
 
   created () {
-    window.addEventListener('dragstart', (e) => console.log(e))
     this.load()
+    // FIX: REMOVE NEXT LINE
+    setTimeout(_ => this.simulate(), 500)
   },
 
   data: () => ({
@@ -146,6 +149,10 @@ export default {
       disabled: false
     },
 
+    // Controls if list is reordening
+    //
+    isShuffle: false,
+
     // Variables for control the interval function.
     //
     interval: {
@@ -164,47 +171,58 @@ export default {
   },
 
   methods: {
+    /**
+     * This function initialize the array of
+     * all available words, and makes a copy
+     * in categories hidding the right answers.
+     */
     load () {
-      //
-      // Initialize categories
       this.categories = this.prop_categories.reduce((acc, curr, idx, arr) => {
         acc.push({ name: curr.name, words: curr.words.map(w => w), input: [] })
         return acc
       }, [])
 
-      //
-      // All available words
       this.list = this.prop_categories.reduce(
         (acc, val) => acc.concat(val.words),
         []
       )
     },
 
+    /*
+     * Start the game, this function is called on first and every movement,
+     * also fires the interval time out for shuffle all the words list.
+     */
     startGame (e) {
-      console.log(e.draggedContext.element)
-      console.log(e.relatedContext)
-
-      // Guards
-      //
-      if (e.draggedContext.element === null) {
-        console.log('Element was null')
-        console.log(e.draggedContext.element)
-        return
-      }
       //
       // Interval has started
       if (this.interval.fn !== null) return
 
-      // Starts the interval for start to play
+      // Starts the interval and conditions to shuffle
       this.interval.fn = setInterval(_ => this.shuffle(), 5000)
     },
 
+    /**
+     * Attributes of the component that
+     * will be render by vue draggable,
+     * pased as props.
+     */
     listGroupComponentAttributes: () => ({
       attrs: { horizontal: 'md' }
     }),
 
+    /**
+     * Clear the curent interval time out.
+    */
     clearInterval: () => clearInterval(this.interval.fn),
 
+    /**
+     * Function to reorder words list,
+     * meanwhile this function is executing
+     * it must wait at least one second,
+     * first to stop the user interaction and
+     * second to view the time of css transitions
+     * applicable only when is occurring this action.
+     */
     shuffle () {
       const executeSuffle = () => this.list.sort(() => Math.random() - 0.5)
 
@@ -227,8 +245,8 @@ export default {
             executeSuffle()
           }
 
-          setTimeout(_ => disableDragging(false), 500)
-        }, 500)
+          setTimeout(_ => disableDragging(false), 800)
+        }, 50)
       }
     },
 
@@ -251,6 +269,21 @@ export default {
       return statistics
     },
 
+    // FIX: REMOVE THE NEXT FUNCTION
+    async simulate () {
+      this.list = []
+
+      const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+      for (const cat of this.categories) {
+        for (const word of cat.words) {
+          await sleep(1000)
+          console.log(word)
+          cat.input.push(word)
+        }
+      }
+    },
+
     finish () {
       // Save and send data to firebase
       const statistics = this.getStatistics()
@@ -261,6 +294,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#categorization__wrapper {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+#draggable-container {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 .dragMode {
   border: 3px dashed #f363f8;
   background: #faeffd;
@@ -269,22 +315,37 @@ export default {
   transition: transform 0.5s;
 }
 .no-move {
-  transition: transform 0s;
+  transition: transform 0.5s;
 }
 .list-group {
   min-height: 20px;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
+
+.b-list-group-to {
+  min-height: 50px;
+}
+
 .list-group-item {
   cursor: move;
+
+  i {
+    cursor: pointer;
+  }
 }
-.list-group-item i {
-  cursor: pointer;
+
+.list-item-shuffling {
+  border: 1px solid red !important;
+  transition: transform 0.8s;
+  user-select: none;
 }
 
 .list-transition-item {
-  transition: all 0.8s;
   border-radius: 5px;
-  @media screen and (max-width: 768px) {
+  user-select: none; @media screen and (max-width: 768px) {
     width: 100%;
   }
 }
@@ -295,9 +356,5 @@ export default {
 }
 .list-transition-leave-active {
   position: absolute;
-}
-.card-bg {
-  background-color: white !important;
-  background: transparent !important;
 }
 </style>
