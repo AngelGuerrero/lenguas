@@ -36,7 +36,7 @@ export const routes = [
         title: 'Juego de Categorización',
         name: 'Categorization',
         component: () => import('@/components/Games/Categorization/Categorization.vue'),
-        props: { p_categories: categories }
+        props: { prop_categories: categories }
       },
       {
         path: '/dashboard/users',

@@ -6,12 +6,11 @@
 
     <b-container>
       <!-- <pre>{{ $data.list }}</pre> -->
-
     </b-container>
 
     <b-container class="pt-3" fluid>
       <b-row>
-        <!-- All word list -->
+        <!-- From -->
         <b-col sm="12" md="12" v-if="!isGameOver">
           <b-card-group>
             <!-- Main card -->
@@ -29,13 +28,15 @@
                 class="d-flex flex-wrap justify-content-center"
                 :class="drag.dragging ? 'dragMode' : ''"
                 :disabled="drag.disabled"
+                :component-data="listGroupComponentAttributes()"
                 :list="list"
-                :component-data="getListWordsComponentData()"
                 v-bind="dragOptions"
                 :group="drag.group"
                 :move="startGame"
+                :sort="false"
                 @start="drag.dragging = true"
                 @end="drag.dragging = false"
+                draggable=".list-transition-item"
               >
                 <transition-group
                   name="list-transition"
@@ -64,10 +65,10 @@
           </b-card-group>
         </b-col>
 
-        <!-- Columns list containers -->
+        <!-- To -->
         <b-col class="pt-3" sm="12" md="12">
           <b-row>
-            <b-col v-for="category in categories" :key="category.id" class="pb-3" sm="12" md="4">
+            <b-col v-for="category in categories" :key="category.id" class="pb-3" sm="12" md="2">
               <b-card-group deck>
                 <b-card
                   :header="category.name"
@@ -76,20 +77,17 @@
                   header-class="text-center text-uppercase font-weight-bold"
                 >
                   <draggable
-                    tag="b-list-group"
+                    tag
                     v-bind="dragOptions"
                     v-model="category.input"
                     :class="drag.dragging ? 'dragMode' : ''"
                     :group="drag.group"
                     :disabled="isGameOver"
+                    :sort="false"
                     @start="drag.dragging = true"
                     @end="drag.dragging = false"
                   >
-                    <b-list-group-item
-                      v-for="item in category.input"
-                      :key="item"
-                      :disabled="isGameOver"
-                    >{{ item }}</b-list-group-item>
+                    <b-list-group-item v-for="item in category.input" :key="item" :disabled="isGameOver" >{{ item }}</b-list-group-item>
                   </draggable>
                 </b-card>
               </b-card-group>
@@ -101,8 +99,8 @@
       <b-row>
         <b-col sm="12" md="12">
           <button
+            v-if="isGameOver"
             class="btn btn-success float-right"
-            v-if="list.length <= 0"
             @click="finish()"
           >Enviar respuestas</button>
         </b-col>
@@ -116,7 +114,7 @@ import draggable from 'vuedraggable'
 
 export default {
   props: {
-    p_categories: {
+    prop_categories: {
       type: Array,
       required: true
     }
@@ -125,41 +123,31 @@ export default {
   components: { draggable },
 
   created () {
-    //
-    // Load categories and all word list
+    window.addEventListener('dragstart', (e) => console.log(e))
     this.load()
   },
 
-  computed: {
-    dragOptions: function () {
-      return {
-        animation: 400,
-        disabled: false
-      }
-    },
-
-    isGameOver: function () {
-      return this.list.length <= 0
-    }
-  },
-
   data: () => ({
+    // Available words list.
     //
-    // All words available
     list: [],
+
+    // Contains the correct answers,
+    // and the user answers.
     //
-    // Categories which contains the correct answers
     categories: [],
+
+    // Are the options for the
+    // drang and drop components.
     //
-    // Drag and drop options components
     drag: {
       group: 'shared-group',
       dragging: false,
       disabled: false
     },
+
+    // Variables for control the interval function.
     //
-    // Variables for control the interval function
-    // and shuffle list
     interval: {
       fn: null,
       paused: false,
@@ -167,56 +155,76 @@ export default {
     }
   }),
 
+  computed: {
+    dragOptions: function () {
+      return { animation: 400, disabled: false }
+    },
+
+    isGameOver: function () { return this.list.length <= 0 }
+  },
+
   methods: {
     load () {
       //
       // Initialize categories
-      this.categories = this.p_categories.reduce((acc, curr, idx, arr) => {
+      this.categories = this.prop_categories.reduce((acc, curr, idx, arr) => {
         acc.push({ name: curr.name, words: curr.words.map(w => w), input: [] })
         return acc
       }, [])
 
+      //
       // All available words
-      this.list = this.p_categories.reduce(
+      this.list = this.prop_categories.reduce(
         (acc, val) => acc.concat(val.words),
         []
       )
     },
 
-    startGame () {
-      if (this.interval.fn !== null) return
+    startGame (e) {
+      console.log(e.draggedContext.element)
+      console.log(e.relatedContext)
+
+      // Guards
       //
+      if (e.draggedContext.element === null) {
+        console.log('Element was null')
+        console.log(e.draggedContext.element)
+        return
+      }
+      //
+      // Interval has started
+      if (this.interval.fn !== null) return
+
       // Starts the interval for start to play
       this.interval.fn = setInterval(_ => this.shuffle(), 5000)
     },
 
-    getListWordsComponentData: () => ({
-      attrs: {
-        horizontal: 'md'
-      }
+    listGroupComponentAttributes: () => ({
+      attrs: { horizontal: 'md' }
     }),
 
+    clearInterval: () => clearInterval(this.interval.fn),
+
     shuffle () {
-      const exec = () => this.list.sort(() => Math.random() - 0.5)
-      const disableDragging = val => { this.drag.disabled = val }
+      const executeSuffle = () => this.list.sort(() => Math.random() - 0.5)
+
+      const disableDragging = value => { this.drag.disabled = value }
+
       const isDragging = () => this.drag.dragging
 
+      // Guards
       //
-      // Check if the internal went cancelled
-      if (this.interval.cancelled) {
-        clearInterval(this.interval.fn)
-        return
-      }
+      if (this.interval.cancelled) { this.clearInterval(); return }
       //
-      // Is paused?
       if (this.interval.paused) return
+
+      // The user is not dragging ?
       //
-      // The user is dragging ?
       if (!this.drag.dragging) {
-        setTimeout(() => {
+        setTimeout(_ => {
           if (!isDragging()) {
             disableDragging(true)
-            exec()
+            executeSuffle()
           }
 
           setTimeout(_ => disableDragging(false), 500)
