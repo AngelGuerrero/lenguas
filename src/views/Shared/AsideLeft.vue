@@ -1,10 +1,6 @@
 <template>
   <transition name="slide-fade">
-    <div
-      id="aside__wrapper"
-      v-show="this.$store.state.ui.asideLeft.show"
-      :class="[this.$store.state.ui.asideLeft.isMobile ? 'mobile' : 'desktop']"
-    >
+    <div id="aside__wrapper" v-show="asideLeft.show" :class="[asideLeft.isMobile ? 'mobile' : 'desktop']">
       <!-- Header -->
       <b-container class="p-4">
         <h4 class="m-0">Módulos</h4>
@@ -12,8 +8,8 @@
 
       <!-- Main content slot -->
       <b-list-group>
-        <b-list-group-item href="#" v-for="route in getDashboardRoutes" :key="route.id">
-          <router-link :to="route.path">{{ route.title }}</router-link>
+        <b-list-group-item v-for="route in getDashboardRoutes" :key="route.id">
+          <router-link :to="{name: route.name }">{{ route.title }}</router-link>
         </b-list-group-item>
       </b-list-group>
     </div>
@@ -22,9 +18,12 @@
 
 <script>
 import { routes } from '@/routes'
+import { mapState } from 'vuex'
 
 export default {
   computed: {
+    ...mapState('ui', ['asideLeft']),
+
     getDashboardRoutes () {
       return routes.find(route => route.name === 'Dashboard').children
     }

@@ -23,23 +23,28 @@ export default {
   },
 
   actions: {
-    setCurrentUser: ({ commit }, user) => { commit('setCurrentUser', user) },
+    setCurrentUser: ({ commit }, user) => {
+      commit('setCurrentUser', user)
+      return { error: false, message: 'User loaded successfully' }
+    },
 
     fetchUserProfile: async ({ commit, dispatch }, uid) => {
-      return new Promise((resolve) => {
+      const retval = { error: false, message: '', event: 'fetching user profile', data: null }
+
+      return new Promise((resolve, reject) => {
         usersCollection
           .doc(uid)
           .get()
           .then(result => {
             commit('setCurrentProfile', result.data())
-            resolve()
+            resolve(retval)
           })
-          .catch(error =>
-            dispatch(
-              'pushAsyncLog',
-              { error: true, message: error, event: 'fetching user profile' },
-              { root: true }
-            )
+          .catch(error => {
+            retval.error = true
+            retval.message = error.message
+            dispatch('pushAsyncLog', retval, { root: true })
+            reject(retval)
+          }
           )
       })
     },

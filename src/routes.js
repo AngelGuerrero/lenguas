@@ -1,8 +1,6 @@
 import Dashboard from './views/Dashboard'
 import Access from './views/Access'
 
-import categories from '@/data/Categories'
-
 export const routes = [
   { path: '', redirect: 'login' },
   { path: '*', redirect: 'login' },
@@ -33,10 +31,9 @@ export const routes = [
     children: [
       {
         path: '/dashboard/categorization',
-        title: 'Juego de Categorización',
+        title: 'Categorización de palabras',
         name: 'Categorization',
-        component: () => import('@/components/Games/Categorization/Categorization.vue'),
-        props: { prop_categories: categories }
+        component: () => import('@/components/Games/Categorization/Categorization.vue')
       },
       {
         path: '/dashboard/users',

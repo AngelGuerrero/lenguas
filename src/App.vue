@@ -1,14 +1,7 @@
 <template>
   <div>
     <!-- If all data isn't loaded -->
-    <div
-      v-if="this.$store.getters.performingInitialTasks"
-      class="vh-100 d-flex flex-column justify-content-center align-items-center bg-dark text-light"
-    >
-      <b-spinner style="width: 3rem; height: 3rem;" label="Large Spinner" class="mb-4"></b-spinner>
-      <strong>Cargando...</strong>
-      <strong>{{ this.$store.state.currentTask }}</strong>
-    </div>
+    <loading v-if="this.$store.getters.performingInitialTasks" />
     <!-- Else -->
     <div id="app" v-else>
       <div id="main">
@@ -20,23 +13,11 @@
 </template>
 
 <script>
+import Loading from './views/Shared/Loading'
 import FooterComponent from './views/Shared/Footer'
 
 export default {
-  components: {
-    FooterComponent
-  },
-
-  created () {
-    this.checkWindowSize()
-    window.addEventListener('resize', this.checkWindowSize)
-  },
-
-  methods: {
-    checkWindowSize () {
-      this.$store.commit('ui/setAsideToMobile', window.innerWidth < 768)
-    }
-  }
+  components: { FooterComponent, Loading }
 }
 </script>
 
@@ -46,11 +27,11 @@ export default {
 #app
   height: 100vh
   overflow: hidden
-   -moz-user-select: -moz-none;
-   -khtml-user-select: none;
-   -webkit-user-select: none;
-   -ms-user-select: none;
-   user-select: none;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 
 #main
   height: calc(100vh - 57px)

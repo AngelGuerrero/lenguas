@@ -11,25 +11,47 @@ Vue.use(Vuex)
 
 //
 // Handle reload window
-firebase.auth().onAuthStateChanged(user => {
+firebase.auth().onAuthStateChanged(async user => {
   if (!user) return
 
+  //
+  // Add tasks to the queue to resolve later when load main App component
+  //
   //
   // Set the user from firebase authentication
   store.commit('addTaskToQueue', {
     action: 'users/setCurrentUser',
     data: user,
-    label: 'Validando sesión de usuario.'
+    label: 'Validando sesión de usuario'
   })
   //
   // Fetch user from the database
   store.commit('addTaskToQueue', {
     action: 'users/fetchUserProfile',
     data: user.uid,
-    label: 'Obteniendo perfil.'
+    label: 'Obteniendo perfil'
   })
   //
-  // Execute the required initial functions
+  //
+  store.commit('addTaskToQueue', {
+    action: 'games/createGameIfNotExists',
+    data: {
+      name: 'categorization',
+      payload: {
+        created: new Date()
+      }
+    },
+    label: 'Cargando juegos'
+  })
+  //
+  // Check if the words existing in firebase database
+  // if not exists, then upload local data to firebase
+  store.commit('addTaskToQueue', {
+    action: 'games/loadCategoriesCollectionIfNotExists',
+    data: null,
+    label: 'Cargando idiomas'
+  })
+
   store.dispatch('executeAsyncActions')
 })
 
@@ -41,29 +63,32 @@ export const store = new Vuex.Store({
   },
 
   getters: {
-    performingInitialTasks: function (state) {
-      return state.queueTasks.length > 0
-    }
+    performingInitialTasks: function (state) { return state.queueTasks.length > 0 }
   },
 
   mutations: {
     ...vuexfireMutations,
 
-    addTaskToQueue: (state, payload) => state.queueTasks.push(payload)
+    addTaskToQueue: (state, payload) => state.queueTasks.push(payload),
+
+    shiftTaskFromQueue: (state) => state.queueTasks.shift()
   },
 
   actions: {
-    executeAsyncActions: ({ state, dispatch }) => {
-      const showMessage = message => { state.currentTask = message }
-
-      const fn = task => new Promise(resolve => {
-        showMessage(`${task.label}, espere, por favor...`)
-        dispatch(task.action, task.data).then(_ => state.queueTasks.shift())
-        // External main thread ??
-        setTimeout(() => resolve())
+    executeAsyncActions: async ({ state, commit, dispatch }) => {
+      const fn = (task, ms) => new Promise(resolve => {
+        const getval = dispatch(task.action, task.data)
+        setTimeout(_ => resolve(getval), ms)
       })
 
-      state.queueTasks.reduce((p, c) => fn(p).then(_ => fn(c)))
+      const queue = Array.from(state.queueTasks)
+      for (const task of queue) {
+        state.currentTask = `${task.label}, espere, por favor...`
+        await fn(task, 0).then(response => {
+          console.log(response)
+          commit('shiftTaskFromQueue')
+        })
+      }
     },
 
     pushAsyncLog: ({ state }, payload) => {

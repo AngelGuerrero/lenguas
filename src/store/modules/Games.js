@@ -1,17 +1,17 @@
-import { answersCollection, gamesCollection } from '@/data/FirebaseConfig'
+import { answersCollection, gamesCollection, categoriesCollection, db } from '@/data/FirebaseConfig'
 // import { firestoreAction } from 'vuexfire'
 
 export default {
   namespaced: true,
 
   state: {
-    // categories: []
+    // List of the available languages
+    //
+    categories: []
   },
 
   mutations: {
-    // setCategories (state, payload) {
-    //   state.categories.push(payload)
-    // }
+    setCategories: (state, payload) => state.categories.push(payload)
   },
 
   actions: {
@@ -20,12 +20,12 @@ export default {
 
       await answersCollection
         .add(payload)
-        // .then((response) => {
-        //   retval.message = `Answers saved successfully with id ${response.id}`
-        // }).catch((error) => {
-        //   retval.error = true
-        //   retval.message = error
-        // })
+        .then((response) => {
+          retval.message = `Answers saved successfully with id ${response.id}`
+        }).catch((error) => {
+          retval.error = true
+          retval.message = error
+        })
 
       return retval
     },
@@ -59,60 +59,63 @@ export default {
       retval.message = 'Juego encontrado'
 
       return retval
+    },
+
+    getCategories: async ({ state, commit }) => {
+      const retval = { error: false, message: 'Categories loaded successfully' }
+
+      if (state.categories.length > 0) {
+        retval.message = 'Categories already exists'
+        return retval
+      }
+
+      const refs = await categoriesCollection.get()
+
+      refs.forEach(doc => { commit('setCategories', doc.data()) })
+
+      return retval
+    },
+
+    loadCategoriesCollectionIfNotExists: async ({ dispatch }) => {
+      const retval = { error: false, message: 'Categories already exists' }
+
+      //
+      // Collectin already exists?
+      const collectionExists = await categoriesCollection.get()
+      if (!collectionExists.empty) return retval
+
+      //
+      // Upload initial data to firebase
+      const categories = require('@/data/Categories').default
+      const getval = await dispatch('loadCategories', categories)
+
+      // return getval
+      return getval
+    },
+
+    loadCategories: async ({ dispatch }, categories) => {
+      const retval = { error: false, message: 'Categories loaded successfully' }
+
+      categories.forEach(async (category) => {
+        await db
+          .collection('games')
+          .doc('categorization')
+          .collection('categories')
+          .add(category)
+          .catch((error) => {
+            // report local error
+            retval.error = true
+            retval.message = error.message
+            // report remote error
+            dispatch(
+              'pushAsyncLog',
+              { error: true, message: retval.messages, event: 'Pushing categories' },
+              { root: true }
+            )
+          })
+      })
+
+      return retval
     }
-
-    //
-    // Fix: Component crash when data is remote
-    //
-    // bindCategories: firestoreAction(({ bindFirestoreRef }) => {
-    //   return bindFirestoreRef('categories', categoriesCollection)
-    // }),
-
-    // getCategories: async ({ commit }) => {
-    //   const retval = { error: false, message: '' }
-
-    //   const refs = await categoriesCollection.get()
-
-    //   refs.forEach(doc => { commit('setCategories', doc.data()) })
-
-    //   return retval
-    // },
-
-    // loadCollectionIfNotExists: async ({ dispatch }) => {
-    //   const retval = { error: false, message: 'categories exists' }
-
-    //   const collectionExists = await categoriesCollection.get()
-
-    //   if (!collectionExists.empty) return dispatch('getCategories')
-
-    //   const categories = require('@/data/Categories').default
-
-    //   const getval = await dispatch('loadCategories', categories)
-
-    //   if (getval.errors > 0) return getval
-
-    //   return retval
-    // },
-
-    // loadCategories: async ({ dispatch }, categories) => {
-    //   const retval = { errors: 0, success: 0, messages: [] }
-
-    //   categories.forEach(async (category) => {
-    //     const getvalAdded = await categoriesCollection.add(category)
-
-    //     if (getvalAdded.id) {
-    //       const message = `Item with id: ${getvalAdded.id} added`
-    //       retval.success += 1
-    //       retval.messages.push(message)
-    //       return
-    //     }
-
-    //     retval.errors += 1
-    //     retval.messages.push(getvalAdded)
-    //   })
-
-    //   return retval
-    // }
-
   }
 }

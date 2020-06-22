@@ -1,26 +1,34 @@
 <template>
   <div id="wrapper">
-    <navbar></navbar>
-    <!-- Aside left -->
+    <navbar />
     <aside-left />
 
-    <!-- Main content -->
-    <div id="dashboard__content" class="p-3">
-      <router-view></router-view>
-    </div>
+    <main id="dashboard__content" class="p-3">
+      <router-view />
+    </main>
   </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import Navbar from '@/views/Shared/Navbar'
 import AsideLeft from '@/views/Shared/AsideLeft'
 
 export default {
   components: { Navbar, AsideLeft },
 
-  data: () => ({
-    showComponent: false
-  })
+  mounted () {
+    this.checkWindowSize()
+    window.addEventListener('resize', this.checkWindowSize)
+  },
+
+  methods: {
+    ...mapMutations('ui', ['setAsideToMobile']),
+
+    checkWindowSize () {
+      this.setAsideToMobile(window.innerWidth < 768)
+    }
+  }
 }
 </script>
 
@@ -34,7 +42,7 @@ export default {
   display: flex
   justify-content: stretch
   background-color: $access-bg
-  background: rgba(255, 255, 255, 0.40)
+  background: rgba(255, 255, 255, 0.75)
   transition: all 1s
 
 #dashboard__content

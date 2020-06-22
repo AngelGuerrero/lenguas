@@ -7,7 +7,7 @@
     <b-container class="pt-3">
       <div>
         <b-table
-          head-variant="light"
+          table-variant="dark"
           striped
           responsive
           hover
@@ -47,6 +47,3 @@ export default {
   })
 }
 </script>
-
-<style lang="sass" scoped>
-</style>

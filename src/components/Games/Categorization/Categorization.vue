@@ -1,133 +1,162 @@
 <template>
-  <div id="categorization__wrapper">
-    <b-container class="pt-4" fluid>
-      <h2>Juego de palabras</h2>
-    </b-container>
+  <div>
+    <!-- Loading state -->
+    <div v-if="xcategories.length <= 0">
+      <b-alert variant="warning" show><strong>Cargando, por favor, espere...</strong></b-alert>
+    </div>
 
-    <b-container class="pt-3" fluid>
-      <b-row>
-        <!-- From -->
-        <b-col sm="12" md="12" v-if="!isGameOver">
-          <b-card-group>
-            <!-- Main card -->
-            <b-card
-              header="Palabras disponibles"
-              header-bg-variant="dark"
-              header-text-variant="white"
-              header-class="text-center text-uppercase font-weight-bold"
-              body-bg-variant="light"
-              body-class="p-1"
-              footer-bg-variant="white"
-              footer-text-variant="dark"
-            >
-              <draggable
-                id="draggable-container"
-                tag="b-list-group"
-                class="d-flex flex-wrap justify-content-center"
-                :class="drag.dragging ? 'dragMode' : ''"
-                :disabled="drag.disabled"
-                :component-data="listGroupComponentAttributes()"
-                :list="list"
-                v-bind="dragOptions"
-                :group="drag.group"
-                :move="startGame"
-                :sort="false"
-                @start="drag.dragging = true"
-                @end="drag.dragging = false"
-                draggable=".list-transition-item"
+    <!-- Success state -->
+    <div id="categorization__wrapper" v-else>
+      <b-container class="pt-4" fluid>
+        <h2>Juego de palabras</h2>
+      </b-container>
+
+      <b-container class="pt-3" fluid>
+        <b-row>
+          <!-- From -->
+          <b-col sm="12" md="12" v-if="!isGameOver">
+            <b-card-group>
+              <!-- Main card -->
+              <b-card
+                header="Palabras disponibles"
+                header-bg-variant="dark"
+                header-text-variant="white"
+                header-class="text-center text-uppercase font-weight-bold"
+                body-bg-variant="light"
+                body-class="p-1"
+                footer-bg-variant="white"
+                footer-text-variant="dark"
               >
-                <transition-group
-                  name="list-transition"
-                  class="d-flex flex-wrap justify-content-between list-wrapper-transition"
+                <draggable
+                  id="draggable-container"
+                  tag="b-list-group"
+                  class="d-flex flex-wrap justify-content-center"
+                  :class="drag.dragging ? 'dragMode' : ''"
+                  :disabled="drag.disabled"
+                  :component-data="listGroupComponentAttributes()"
+                  :list="list"
+                  v-bind="dragOptions"
+                  :group="drag.group"
+                  :move="startGame"
+                  :sort="false"
+                  @start="drag.dragging = true"
+                  @end="drag.dragging = false"
+                  draggable=".list-transition-item"
                 >
-                  <b-list-group-item
-                    v-for="(item, index) in list"
-                    :key="item"
-                    :id="'from-'+[index]"
-                    :class="{ 'list-item-shuffling': drag.disabled }"
-                    class="list-transition-item m-1 border border-success"
-                  >{{ item }}</b-list-group-item>
-                </transition-group>
-              </draggable>
-              <!-- Footer slot card -->
-              <template v-slot:footer>
-                <div class="w-25 d-flex align-items-center" v-if="drag.disabled">
-                  <b-spinner label="Loading..." small variant="danger"></b-spinner>
-                  <strong class="mx-3 text-danger">Reordenando...</strong>
-                </div>
-                <div v-else class="w-50 d-flex align-items-center">
-                  <b-spinner type="grow" label="Ahora puedes arrastrar" small variant="success"></b-spinner>
-                  <strong class="mx-3 text-success">Ahora puedes arrastrar</strong>
-                </div>
-              </template>
-            </b-card>
-          </b-card-group>
-        </b-col>
-
-        <!-- To -->
-        <b-col class="pt-3" sm="12" md="12">
-          <b-row>
-            <b-col v-for="(category, index) in categories" :key="category.id" class="p-1" sm="12" md="3">
-              <b-card-group deck>
-                <b-card
-                  :header="category.name"
-                  header-bg-variant="primary"
-                  header-text-variant="light"
-                  header-class="text-center text-uppercase font-weight-bold"
-                  body-class="p-1"
-                >
-                  <draggable
-                    :id="'to-'+[index]"
-                    tag="b-list-group"
-                    v-bind="dragOptions"
-                    v-model="category.input"
-                    class="b-list-group-to"
-                    :class="drag.dragging ? 'dragMode' : ''"
-                    :group="drag.group"
-                    :disabled="isGameOver || drag.disabled"
-                    :sort="false"
-                    @start="drag.dragging = true"
-                    @end="drag.dragging = false"
+                  <transition-group
+                    name="list-transition"
+                    class="d-flex flex-wrap justify-content-between list-wrapper-transition"
                   >
-                    <b-list-group-item v-for="item in category.input" :key="item" :disabled="isGameOver" >{{ item }}</b-list-group-item>
-                  </draggable>
-                </b-card>
-              </b-card-group>
-            </b-col>
-          </b-row>
-        </b-col>
-      </b-row>
+                    <b-list-group-item
+                      v-for="(item, index) in list"
+                      :key="item"
+                      :id="'from-'+[index]"
+                      :class="{ 'list-item-shuffling': drag.disabled }"
+                      class="list-transition-item m-1 border border-success"
+                    >{{ item }}</b-list-group-item>
+                  </transition-group>
+                </draggable>
+                <!-- Footer slot card -->
+                <template v-slot:footer>
+                  <div class="w-25 d-flex align-items-center" v-if="drag.disabled">
+                    <b-spinner label="Loading..." small variant="danger"></b-spinner>
+                    <strong class="mx-3 text-danger">Reordenando...</strong>
+                  </div>
+                  <div v-else class="w-50 d-flex align-items-center">
+                    <b-spinner type="grow" label="Ahora puedes arrastrar" small variant="success"></b-spinner>
+                    <strong class="mx-3 text-success">Ahora puedes arrastrar</strong>
+                  </div>
+                </template>
+              </b-card>
+            </b-card-group>
+          </b-col>
 
-      <b-row>
-        <b-col sm="12" md="12">
-          <button
-            v-if="isGameOver"
-            class="btn btn-success float-right"
-            @click="finish()"
-          >Enviar respuestas</button>
-        </b-col>
-      </b-row>
-    </b-container>
+          <!-- To -->
+          <b-col class="pt-3" sm="12" md="12">
+            <b-row>
+              <b-col
+                v-for="(category, index) in categories"
+                :key="category.id"
+                class="p-1"
+                sm="12"
+                md="3"
+              >
+                <b-card-group deck>
+                  <b-card
+                    :header="category.name"
+                    header-bg-variant="primary"
+                    header-text-variant="light"
+                    header-class="text-center text-uppercase font-weight-bold"
+                    body-class="p-1"
+                  >
+                    <draggable
+                      :id="'to-'+[index]"
+                      tag="b-list-group"
+                      v-bind="dragOptions"
+                      v-model="category.input"
+                      class="b-list-group-to"
+                      :class="drag.dragging ? 'dragMode' : ''"
+                      :group="drag.group"
+                      :disabled="isGameOver || drag.disabled"
+                      :sort="false"
+                      @start="drag.dragging = true"
+                      @end="drag.dragging = false"
+                    >
+                      <b-list-group-item
+                        v-for="item in category.input"
+                        :key="item"
+                        :disabled="isGameOver"
+                      >{{ item }}</b-list-group-item>
+                    </draggable>
+                  </b-card>
+                </b-card-group>
+              </b-col>
+            </b-row>
+          </b-col>
+        </b-row>
+
+        <b-row>
+          <b-col sm="12" md="12">
+            <button
+              v-if="isGameOver"
+              class="btn btn-success float-right"
+              @click="finish()"
+            >Enviar respuestas</button>
+          </b-col>
+        </b-row>
+      </b-container>
+    </div>
   </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable'
+import { mapState } from 'vuex'
 
 export default {
-  props: {
-    prop_categories: {
-      type: Array,
-      required: true
-    }
-  },
-
   components: { draggable },
 
   created () {
-    this.load()
-    // FIX: REMOVE NEXT LINE
-    setTimeout(_ => this.simulate(), 500)
+    //
+    // The first time gets remote data from firebase
+    // and saves it to vuex if the data doesn't exists,
+    // but still needs call the initial function 'load'
+    // and loads all the necessary data for the component.
+    this.$store.dispatch('games/getCategories')
+  },
+
+  watch: {
+    //
+    // If the user refresh the page,
+    // the data will delay some time
+    // and xcategories will be empty array,
+    // then it needs listen changes in xcategories
+    // and try to load again.
+    xcategories: {
+      immediate: true,
+      deep: true,
+      handler (val) { this.load(val) }
+    }
   },
 
   data: () => ({
@@ -149,7 +178,7 @@ export default {
       disabled: false
     },
 
-    // Controls if list is reordening
+    // Controls if list is reordering
     //
     isShuffle: false,
 
@@ -163,9 +192,9 @@ export default {
   }),
 
   computed: {
-    dragOptions: function () {
-      return { animation: 400, disabled: false }
-    },
+    ...mapState('games', { xcategories: 'categories' }),
+
+    dragOptions: function () { return { animation: 400, disabled: false } },
 
     isGameOver: function () { return this.list.length <= 0 }
   },
@@ -176,16 +205,27 @@ export default {
      * all available words, and makes a copy
      * in categories hidding the right answers.
      */
-    load () {
-      this.categories = this.prop_categories.reduce((acc, curr, idx, arr) => {
-        acc.push({ name: curr.name, words: curr.words.map(w => w), input: [] })
-        return acc
-      }, [])
+    load (pcategories) {
+      this.categories = pcategories.reduce(
+        (acc, curr, idx, arr) => {
+          acc.push({
+            name: curr.name,
+            words: curr.words.map(w => w),
+            input: []
+          })
+          return acc
+        },
+        []
+      )
 
-      this.list = this.prop_categories.reduce(
+      this.list = pcategories.reduce(
         (acc, val) => acc.concat(val.words),
         []
       )
+
+      //
+      // FIX: REMOVE NEXT LINE
+      this.simulate()
     },
 
     /*
@@ -212,7 +252,7 @@ export default {
 
     /**
      * Clear the curent interval time out.
-    */
+     */
     clearInterval: () => clearInterval(this.interval.fn),
 
     /**
@@ -226,13 +266,18 @@ export default {
     shuffle () {
       const executeSuffle = () => this.list.sort(() => Math.random() - 0.5)
 
-      const disableDragging = value => { this.drag.disabled = value }
+      const disableDragging = value => {
+        this.drag.disabled = value
+      }
 
       const isDragging = () => this.drag.dragging
 
       // Guards
       //
-      if (this.interval.cancelled) { this.clearInterval(); return }
+      if (this.interval.cancelled) {
+        this.clearInterval()
+        return
+      }
       //
       if (this.interval.paused) return
 
@@ -273,21 +318,22 @@ export default {
     async simulate () {
       this.list = []
 
-      const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+      const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
       for (const cat of this.categories) {
         for (const word of cat.words) {
-          await sleep(1000)
-          console.log(word)
+          await sleep(500)
           cat.input.push(word)
         }
       }
+
+      this.finish()
     },
 
     finish () {
       // Save and send data to firebase
       const statistics = this.getStatistics()
-      this.SAVE_ANSWERS(statistics)
+      console.log(statistics)
     }
   }
 }
@@ -345,7 +391,8 @@ export default {
 
 .list-transition-item {
   border-radius: 5px;
-  user-select: none; @media screen and (max-width: 768px) {
+  user-select: none;
+  @media screen and (max-width: 768px) {
     width: 100%;
   }
 }
