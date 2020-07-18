@@ -223,8 +223,7 @@ export default {
         []
       )
 
-      //
-      // FIX: REMOVE NEXT LINE
+      // TODO: REMOVE NEXT LINE
       this.simulate()
     },
 
@@ -233,11 +232,9 @@ export default {
      * also fires the interval time out for shuffle all the words list.
      */
     startGame (e) {
-      //
-      // Interval has started
+      // ? Interval has started
       if (this.interval.fn !== null) return
-
-      // Starts the interval and conditions to shuffle
+      // ! Let's shuffle!
       this.interval.fn = setInterval(_ => this.shuffle(), 5000)
     },
 
@@ -314,7 +311,7 @@ export default {
       return statistics
     },
 
-    // FIX: REMOVE THE NEXT FUNCTION
+    // TODO: REMOVE THE NEXT FUNCTION
     async simulate () {
       this.list = []
 

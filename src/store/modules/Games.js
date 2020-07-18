@@ -79,18 +79,27 @@ export default {
     loadCategoriesCollectionIfNotExists: async ({ dispatch }) => {
       const retval = { error: false, message: 'Categories already exists' }
 
-      //
-      // Collectin already exists?
-      const collectionExists = await categoriesCollection.get()
-      if (!collectionExists.empty) return retval
-
-      //
-      // Upload initial data to firebase
-      const categories = require('@/data/Categories').default
-      const getval = await dispatch('loadCategories', categories)
-
-      // return getval
-      return getval
+      try {
+        //
+        // Collection already exists?
+        const collectionExists = await categoriesCollection.get()
+        if (!collectionExists.empty) return retval
+        //
+        // Upload initial data to firebase
+        const categories = require('@/data/Categories').default
+        const getval = await dispatch('loadCategories', categories)
+        return getval
+      } catch (error) {
+        // report local error
+        retval.error = true
+        retval.message = error.message
+        // report remote error
+        dispatch(
+          'pushAsyncLog',
+          { error: true, message: retval.messages, event: 'Pushing categories' },
+          { root: true }
+        )
+      }
     },
 
     loadCategories: async ({ dispatch }, categories) => {

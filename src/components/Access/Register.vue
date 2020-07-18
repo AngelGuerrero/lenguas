@@ -331,9 +331,6 @@ export default {
         return
       }
 
-      //
-      // Fix: Push to the user dashboard
-      console.log('Cuenta creada correctamente')
       this.reset(event)
       this.$router.replace('dashboard')
     },

@@ -59,7 +59,14 @@ export const store = new Vuex.Store({
   state: {
     currentTask: '',
 
-    queueTasks: []
+    queueTasks: [],
+
+    // This indicates if the program doesn't get the
+    // primordial data for the proper operation.
+    //
+    errorFatal: false,
+    errorFatalDescription: '',
+    errorFatalEvent: ''
   },
 
   getters: {
@@ -76,18 +83,33 @@ export const store = new Vuex.Store({
 
   actions: {
     executeAsyncActions: async ({ state, commit, dispatch }) => {
-      const fn = (task, ms) => new Promise(resolve => {
+      const fn = (task, ms) => new Promise((resolve, reject) => {
         const getval = dispatch(task.action, task.data)
-        setTimeout(_ => resolve(getval), ms)
+
+        setTimeout(_ => {
+          if (getval.error) return reject(getval)
+
+          resolve(getval)
+        }, ms)
       })
 
       const queue = Array.from(state.queueTasks)
       for (const task of queue) {
         state.currentTask = `${task.label}, espere, por favor...`
-        await fn(task, 0).then(response => {
-          console.log(response)
-          commit('shiftTaskFromQueue')
-        })
+        await fn(task, 0)
+          .then(_ => commit('shiftTaskFromQueue'))
+          .catch(error => {
+            //
+            // Verify the severaty of error
+            if (error.errorFatal) {
+              state.errorFatal = true
+              state.errorFatalDescription = `Message: ${error.message}.`
+              state.errorFatalEvent = `Event: ${error.event}`
+              return
+            }
+
+            commit('shiftTaskFromQueue')
+          })
       }
     },
 
@@ -106,7 +128,10 @@ export const store = new Vuex.Store({
 
       logsCollection
         .add(payload)
-        .catch(error => console.log(`Error: Unable to log. ${error}`))
+        .catch(error => {
+          console.error(`Error, Unable write log in the system: ${error.message}.`)
+          console.error(`Error in event: ${payload.event}. Message: ${payload.message}`)
+        })
     },
 
     getDataByQuery: async ({ context }, query) => {

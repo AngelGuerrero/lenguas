@@ -42,6 +42,7 @@ export default {
           .catch(error => {
             retval.error = true
             retval.message = error.message
+            retval.errorFatal = true
             dispatch('pushAsyncLog', retval, { root: true })
             reject(retval)
           }
