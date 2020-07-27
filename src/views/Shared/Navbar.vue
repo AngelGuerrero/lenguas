@@ -105,7 +105,7 @@ export default {
       const getval = await this.$store.dispatch('users/signOut')
 
       if (getval.error) {
-        console.log(`Something went wront: ${getval.message}`)
+        console.log(`Something went wrong: ${getval.message}`)
         return
       }
 
