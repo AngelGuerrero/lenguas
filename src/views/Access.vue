@@ -5,7 +5,7 @@
     </b-container>
 
     <b-container id="form__container">
-      <b-card class="access-view__card" no-body bg-variant="">
+      <b-card class="access-view__card shadow-lg rounded" no-body bg-variant="">
         <b-tabs card align="center">
           <b-tab title="Ingreso" :active="selected_view === 'signin'">
             <b-container>
@@ -77,8 +77,9 @@ export default {
   flex-direction: column
   justify-content: center
   overflow-y: auto
-  background: #3494E6
-  background: $access-background
+  background-color: white
+  background: $access-bg
+  background: rgba(255, 255, 255, 0.60)
 
 #img__container
   padding: 30px 0px 0px 0px
@@ -98,8 +99,6 @@ export default {
   width: 100%
   max-width: 450px
   min-height: 50%
-  // style
-  box-shadow: 0px 0px 30px 10px #dee3e7
   @media screen and (max-width: 500px)
     max-width: 1000px
 </style>

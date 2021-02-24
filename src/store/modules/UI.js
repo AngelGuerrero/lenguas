@@ -5,16 +5,22 @@ export default {
     asideLeft: {
       show: true,
       isMobile: false
+    },
+
+    dashboard: {
+      alert: {
+        show: false,
+        message: '',
+        variant: 'light'
+      }
     }
   },
 
   mutations: {
-    toggleAside (state) {
-      state.asideLeft.show = !state.asideLeft.show
-    },
+    toggleAside (state) { state.asideLeft.show = !state.asideLeft.show },
 
-    setAsideToMobile (state, value) {
-      state.asideLeft.isMobile = value
-    }
+    setAsideToMobile (state, value) { state.asideLeft.isMobile = value },
+
+    setDashboardalert (state, payload) { state.dashboard.alert = payload }
   }
 }

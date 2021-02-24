@@ -22,10 +22,17 @@ const db = firebase.firestore()
 //
 // References
 const usersCollection = db.collection('users')
-const categoriesCollection = db.collection('categories')
+const gamesCollection = db.collection('games')
+const categoriesCollection = db.collection('games/categorization/categories')
+const answersCollection = db.collection('answers')
+const logsCollection = db.collection('logs')
 
 export {
+  db,
   firebase,
+  logsCollection,
   usersCollection,
+  gamesCollection,
+  answersCollection,
   categoriesCollection
 }
