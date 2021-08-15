@@ -22,14 +22,14 @@ firebase.auth().onAuthStateChanged(async user => {
   store.commit('addTaskToQueue', {
     action: 'users/setCurrentUser',
     data: user,
-    label: 'Validando sesión de usuario'
+    label: 'Validando sesión de usuario, espere por favor...'
   })
   //
   // Fetch user from the database
   store.commit('addTaskToQueue', {
     action: 'users/fetchUserProfile',
     data: user.uid,
-    label: 'Obteniendo perfil'
+    label: 'Obteniendo perfil de usuario...'
   })
   //
   //
@@ -41,7 +41,7 @@ firebase.auth().onAuthStateChanged(async user => {
         created: new Date()
       }
     },
-    label: 'Cargando juegos'
+    label: 'Cargando juegos, falta poco...'
   })
   //
   // Check if the words existing in firebase database
@@ -49,7 +49,7 @@ firebase.auth().onAuthStateChanged(async user => {
   store.commit('addTaskToQueue', {
     action: 'games/loadCategoriesCollectionIfNotExists',
     data: null,
-    label: 'Cargando idiomas'
+    label: 'Cargando idiomas. ¡Todo listo!.'
   })
 
   store.dispatch('executeAsyncActions')
@@ -70,7 +70,9 @@ export const store = new Vuex.Store({
   },
 
   getters: {
-    performingInitialTasks: function (state) { return state.queueTasks.length > 0 }
+    performingInitialTasks: function (state) {
+      return state.queueTasks.length > 0
+    }
   },
 
   mutations: {
@@ -78,24 +80,25 @@ export const store = new Vuex.Store({
 
     addTaskToQueue: (state, payload) => state.queueTasks.push(payload),
 
-    shiftTaskFromQueue: (state) => state.queueTasks.shift()
+    shiftTaskFromQueue: state => state.queueTasks.shift()
   },
 
   actions: {
     executeAsyncActions: async ({ state, commit, dispatch }) => {
-      const fn = (task, ms) => new Promise((resolve, reject) => {
-        const getval = dispatch(task.action, task.data)
+      const fn = (task, ms) =>
+        new Promise((resolve, reject) => {
+          const getval = dispatch(task.action, task.data)
 
-        setTimeout(_ => {
-          if (getval.error) return reject(getval)
+          setTimeout(_ => {
+            if (getval.error) return reject(getval)
 
-          resolve(getval)
-        }, ms)
-      })
+            resolve(getval)
+          }, ms)
+        })
 
       const queue = Array.from(state.queueTasks)
       for (const task of queue) {
-        state.currentTask = `${task.label}, espere, por favor...`
+        state.currentTask = `${task.label}`
         await fn(task, 0)
           .then(_ => commit('shiftTaskFromQueue'))
           .catch(error => {
@@ -126,12 +129,14 @@ export const store = new Vuex.Store({
       }
       payload.date = new Date()
 
-      logsCollection
-        .add(payload)
-        .catch(error => {
-          console.error(`Error, Unable write log in the system: ${error.message}.`)
-          console.error(`Error in event: ${payload.event}. Message: ${payload.message}`)
-        })
+      logsCollection.add(payload).catch(error => {
+        console.error(
+          `Error, Unable write log in the system: ${error.message}.`
+        )
+        console.error(
+          `Error in event: ${payload.event}. Message: ${payload.message}`
+        )
+      })
     },
 
     getDataByQuery: async ({ context }, query) => {

@@ -16,10 +16,18 @@ export default {
     users: []
   },
 
-  mutations: {
-    setCurrentUser (state, payload) { state.currentUser = payload },
+  getters: {
+    getCurrentUserId: state => state.currentUser.uid || null
+  },
 
-    setCurrentProfile (state, payload) { state.currentProfile = payload }
+  mutations: {
+    setCurrentUser (state, payload) {
+      state.currentUser = payload
+    },
+
+    setCurrentProfile (state, payload) {
+      state.currentProfile = payload
+    }
   },
 
   actions: {
@@ -29,7 +37,12 @@ export default {
     },
 
     fetchUserProfile: async ({ commit, dispatch }, uid) => {
-      const retval = { error: false, message: '', event: 'fetching user profile', data: null }
+      const retval = {
+        error: false,
+        message: '',
+        event: 'fetching user profile',
+        data: null
+      }
 
       return new Promise((resolve, reject) => {
         usersCollection
@@ -45,8 +58,7 @@ export default {
             retval.errorFatal = true
             dispatch('pushAsyncLog', retval, { root: true })
             reject(retval)
-          }
-          )
+          })
       })
     },
 

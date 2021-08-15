@@ -1,5 +1,8 @@
-import { answersCollection, gamesCollection, categoriesCollection, db } from '@/data/FirebaseConfig'
-// import { firestoreAction } from 'vuexfire'
+import {
+  gamesCollection,
+  categoriesCollection,
+  db
+} from '@/data/FirebaseConfig'
 
 export default {
   namespaced: true,
@@ -15,17 +18,24 @@ export default {
   },
 
   actions: {
-    saveAnswers: async ({ context }, { payload }) => {
+    saveAnswers: async ({ context }, { id, payload }) => {
       const retval = { error: false, message: '' }
 
-      await answersCollection
-        .add(payload)
-        .then((response) => {
-          retval.message = `Answers saved successfully with id ${response.id}`
-        }).catch((error) => {
-          retval.error = true
-          retval.message = error
-        })
+      try {
+        await db
+          .collection(`users/${id}/scores/`)
+          .add({ payload })
+          .then(response => {
+            retval.message = `Answers saved successfully with id ${response.id}`
+          })
+          .catch(error => {
+            retval.error = true
+            retval.message = error
+          })
+      } catch (error) {
+        retval.error = true
+        retval.message = error
+      }
 
       return retval
     },
@@ -38,7 +48,8 @@ export default {
         .set(payload)
         .then(() => {
           retval.message = `Juego ${name}, actualizado correctamente`
-        }).catch(error => {
+        })
+        .catch(error => {
           retval.error = true
           retval.message = error
         })
@@ -71,7 +82,9 @@ export default {
 
       const refs = await categoriesCollection.get()
 
-      refs.forEach(doc => { commit('setCategories', doc.data()) })
+      refs.forEach(doc => {
+        commit('setCategories', doc.data())
+      })
 
       return retval
     },
@@ -96,7 +109,11 @@ export default {
         // report remote error
         dispatch(
           'pushAsyncLog',
-          { error: true, message: retval.messages, event: 'Pushing categories' },
+          {
+            error: true,
+            message: retval.messages,
+            event: 'Pushing categories'
+          },
           { root: true }
         )
       }
@@ -105,20 +122,24 @@ export default {
     loadCategories: async ({ dispatch }, categories) => {
       const retval = { error: false, message: 'Categories loaded successfully' }
 
-      categories.forEach(async (category) => {
+      categories.forEach(async category => {
         await db
           .collection('games')
           .doc('categorization')
           .collection('categories')
           .add(category)
-          .catch((error) => {
+          .catch(error => {
             // report local error
             retval.error = true
             retval.message = error.message
             // report remote error
             dispatch(
               'pushAsyncLog',
-              { error: true, message: retval.messages, event: 'Pushing categories' },
+              {
+                error: true,
+                message: retval.messages,
+                event: 'Pushing categories'
+              },
               { root: true }
             )
           })

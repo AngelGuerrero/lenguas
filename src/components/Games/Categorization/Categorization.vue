@@ -2,7 +2,9 @@
   <div>
     <!-- Loading state -->
     <div v-if="xcategories.length <= 0">
-      <b-alert variant="warning" show><strong>Cargando, por favor, espere...</strong></b-alert>
+      <b-alert variant="warning" show>
+        <strong>Cargando, por favor, espere...</strong>
+      </b-alert>
     </div>
 
     <!-- Success state -->
@@ -50,21 +52,37 @@
                     <b-list-group-item
                       v-for="(item, index) in list"
                       :key="item"
-                      :id="'from-'+[index]"
+                      :id="'from-' + [index]"
                       :class="{ 'list-item-shuffling': drag.disabled }"
                       class="list-transition-item m-1 border border-success"
-                    >{{ item }}</b-list-group-item>
+                    >
+                      {{ item }}
+                    </b-list-group-item>
                   </transition-group>
                 </draggable>
                 <!-- Footer slot card -->
                 <template v-slot:footer>
-                  <div class="w-25 d-flex align-items-center" v-if="drag.disabled">
-                    <b-spinner label="Loading..." small variant="danger"></b-spinner>
+                  <div
+                    class="w-25 d-flex align-items-center"
+                    v-if="drag.disabled"
+                  >
+                    <b-spinner
+                      label="Loading..."
+                      small
+                      variant="danger"
+                    ></b-spinner>
                     <strong class="mx-3 text-danger">Reordenando...</strong>
                   </div>
                   <div v-else class="w-50 d-flex align-items-center">
-                    <b-spinner type="grow" label="Ahora puedes arrastrar" small variant="success"></b-spinner>
-                    <strong class="mx-3 text-success">Ahora puedes arrastrar</strong>
+                    <b-spinner
+                      type="grow"
+                      label="Ahora puedes arrastrar"
+                      small
+                      variant="success"
+                    ></b-spinner>
+                    <strong class="mx-3 text-success">
+                      Ahora puedes arrastrar
+                    </strong>
                   </div>
                 </template>
               </b-card>
@@ -90,7 +108,7 @@
                     body-class="p-1"
                   >
                     <draggable
-                      :id="'to-'+[index]"
+                      :id="'to-' + [index]"
                       tag="b-list-group"
                       v-bind="dragOptions"
                       v-model="category.input"
@@ -106,7 +124,9 @@
                         v-for="item in category.input"
                         :key="item"
                         :disabled="isGameOver"
-                      >{{ item }}</b-list-group-item>
+                      >
+                        {{ item }}
+                      </b-list-group-item>
                     </draggable>
                   </b-card>
                 </b-card-group>
@@ -121,7 +141,10 @@
               v-if="isGameOver"
               class="btn btn-success float-right"
               @click="finish()"
-            >Enviar respuestas</button>
+              :disabled="answersSaved"
+            >
+              Enviar respuestas
+            </button>
           </b-col>
         </b-row>
       </b-container>
@@ -155,7 +178,9 @@ export default {
     xcategories: {
       immediate: true,
       deep: true,
-      handler (val) { this.load(val) }
+      handler (val) {
+        this.load(val)
+      }
     }
   },
 
@@ -188,15 +213,21 @@ export default {
       fn: null,
       paused: false,
       cancelled: false
-    }
+    },
+
+    answersSaved: false
   }),
 
   computed: {
     ...mapState('games', { xcategories: 'categories' }),
 
-    dragOptions: function () { return { animation: 400, disabled: false } },
+    dragOptions: function () {
+      return { animation: 400, disabled: false }
+    },
 
-    isGameOver: function () { return this.list.length <= 0 }
+    isGameOver: function () {
+      return this.list.length <= 0
+    }
   },
 
   methods: {
@@ -206,25 +237,19 @@ export default {
      * in categories hidding the right answers.
      */
     load (pcategories) {
-      this.categories = pcategories.reduce(
-        (acc, curr, idx, arr) => {
-          acc.push({
-            name: curr.name,
-            words: curr.words.map(w => w),
-            input: []
-          })
-          return acc
-        },
-        []
-      )
+      this.categories = pcategories.reduce((acc, curr, idx, arr) => {
+        acc.push({
+          name: curr.name,
+          words: curr.words.map(w => w),
+          input: []
+        })
+        return acc
+      }, [])
 
-      this.list = pcategories.reduce(
-        (acc, val) => acc.concat(val.words),
-        []
-      )
+      this.list = pcategories.reduce((acc, val) => acc.concat(val.words), [])
 
       // TODO: REMOVE NEXT LINE
-      this.simulate()
+      // this.simulate()
     },
 
     /*
@@ -243,14 +268,19 @@ export default {
      * will be render by vue draggable,
      * pased as props.
      */
-    listGroupComponentAttributes: () => ({
-      attrs: { horizontal: 'md' }
-    }),
+    listGroupComponentAttributes () {
+      const attrs = {
+        horizontal: 'md'
+      }
+      return attrs
+    },
 
     /**
      * Clear the curent interval time out.
      */
-    clearInterval: () => clearInterval(this.interval.fn),
+    clearInterval () {
+      clearInterval(this.interval.fn)
+    },
 
     /**
      * Function to reorder words list,
@@ -320,17 +350,28 @@ export default {
       for (const cat of this.categories) {
         for (const word of cat.words) {
           await sleep(500)
-          cat.input.push(word)
+          await cat.input.push(word)
         }
       }
 
       this.finish()
     },
 
-    finish () {
+    async finish () {
       // Save and send data to firebase
       const statistics = this.getStatistics()
-      console.log(statistics)
+
+      const getval = await this.$store.dispatch('games/saveAnswers', {
+        id: this.$store.getters['users/getCurrentUserId'],
+        payload: {
+          statistics,
+          game: 'Categorización de palabras',
+          created_at: new Date(),
+          is_finished: true
+        }
+      })
+
+      this.answersSaved = !getval.error
     }
   }
 }

@@ -1,10 +1,14 @@
 <template>
-  <footer class="page-footer dark">
+  <footer class="dev page-footer dark">
     <div class="footer-copyright text-center py-3">
-      By Wendy with
+      Made by
+      <a href="http://angelguerrero.vercel.app" target="_blank" class="link">
+        Angel Guerrero
+      </a>
+      with
       <img
         class="img-responsive"
-        width="25"
+        width="20"
         src="@/assets/heart.png"
         alt="heart"
       />
@@ -18,4 +22,9 @@
   background: #3494E6
   background: $footer-bg
   color: $enfasis
+  border: 1px solid pink
+  font-size: 12px
+
+.link
+  color: pink
 </style>

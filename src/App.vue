@@ -34,7 +34,7 @@ export default {
   user-select: none;
 
 #main
-  height: calc(100vh - 57px)
+  height: calc(100vh - 45px)
   background: $access-bg
   background-color: white !important
 </style>
